@@ -1,0 +1,175 @@
+Screen:
+
+
+
+    MDTopAppBar:
+        id: topbar
+        markup: True
+        pos_hint: {"top": 1}
+        title: "[color=#FFFFFF][b][size=48][i]Porter[/b]Track[/i][/size][/color]"
+        left_action_items: [["menu", lambda x: app.open_nav_drawer()]]
+        right_action_items: [["plus", lambda x: app.open_task_window()]]
+        elevation: 0.8
+    Widget:
+
+
+
+    MDNavigationLayout:
+
+        ScreenManager:
+            id: screen_manager
+
+            Screen:
+                name: 'main'
+
+
+
+                ScrollView:
+                    do_scroll_x: False
+                    size_hint: 1, 0.92
+                    pos_hint: {"top": 0.75}
+
+                    MDBoxLayout:
+                        id: box
+                        orientation: 'vertical'
+                        spacing: 18
+                        padding: [10,18,10,10]
+                        size_hint_y: None
+                        height: self.minimum_height
+                        row_default_height: '100dp'
+                        row_force_default: True
+
+
+
+            Screen:
+                name: 'booked_tasks'
+                MDBoxLayout:
+                    orientation: 'vertical'
+                    MDLabel:
+                        markup: True
+                        text: "[i][b]Booked Tasks[b][/i]"
+                        font_size: 18
+                        halign: "center"
+                        pos_hint: {"x": 0.0, "y": 0.5}
+                        size_hint: (1, 0.35)
+                        background_color: (0, 0, 0, 0.2)
+                    ScrollView:
+                        id: scrollv1
+                        pos_hint: {"center_y": 0.7, "center_x": 0.5}
+                        size_hint: 0.9, 0.8
+
+                        MDBoxLayout:
+                            id: box1
+                            orientation: 'vertical'
+                            spacing: 18
+                            padding: [10,18,10,10]
+                            size_hint_y: None
+                            height: self.minimum_height
+                            row_default_height: '100dp'
+                            row_force_default: True
+
+            Screen:
+                name: 'completed_tasks'
+                MDBoxLayout:
+                    orientation: 'vertical'
+                    MDLabel:
+                        markup: True
+                        text: "[i][b]Completed Tasks[b][/i]"
+                        font_size: 18
+                        halign: "center"
+                        background_color: (0, 0, 0, 0.2)
+
+            Screen:
+                name: 'team'
+                MDBoxLayout:
+                    orientation: 'vertical'
+                    MDLabel:
+                        markup: True
+                        text: "[i][b]My Team[b][/i]"
+                        font_size: 18
+                        halign: "center"
+                        background_color: (0, 0, 0, 0.2)
+
+            Screen:
+                name: 'stats'
+                MDBoxLayout:
+                    orientation: 'vertical'
+                    MDLabel:
+                        markup: True
+                        text: "[i][b]My Stats[b][/i]"
+                        font_size: 18
+                        halign: "center"
+                        background_color: (0, 0, 0, 0.2)
+
+            Screen:
+                name: 'settings'
+                MDBoxLayout:
+                    orientation: 'vertical'
+                    MDLabel:
+                        markup: True
+                        text: "[i][b]Settings[b][/i]"
+                        font_size: 18
+                        halign: "center"
+                        background_color: (0, 0, 0, 0.2)
+
+    MDNavigationDrawer:
+        id: nav_drawer
+        BoxLayout:
+            orientation: 'vertical'
+            spacing: '20dp'
+            padding: [5,18,10,10]
+            theme_text_color: 'Primary'
+
+            MDLabel:
+                text: 'Porter ID'
+                font_style: 'Subtitle1'
+                size_hint_y: None
+                height: self.texture_size[1]
+                background_color: (1, 1, 1, 0)
+
+            ScrollView:
+                MDList:
+                    OneLineIconListItem:
+                        text: 'Completed Tasks'
+                        on_press:
+                            app.change_screen("completed_tasks")
+                            app.close_nav_drawer()
+                        IconLeftWidget:
+                            icon: 'clipboard-check-outline'
+                    OneLineIconListItem:
+                        text: 'My Team'
+                        on_press:
+                            app.change_screen("team")
+                            app.close_nav_drawer()
+                        IconLeftWidget:
+                            icon: 'account-group'
+                    OneLineIconListItem:
+                        text: 'My Stats'
+                        on_press:
+                            app.change_screen("stats")
+                            app.close_nav_drawer()
+                        IconLeftWidget:
+                            icon: 'chart-line'
+                    OneLineIconListItem:
+                        text: 'Settings'
+                        on_press:
+                            app.change_screen("settings")
+                            app.close_nav_drawer()
+                        IconLeftWidget:
+                            icon: 'cog-outline'
+                    OneLineIconListItem:
+                        text: 'Logout'
+                        IconLeftWidget:
+                            icon: 'logout'
+
+    MDBottomAppBar:
+        MDTopAppBar:
+            title: ""
+            icon: "home"
+            on_action_button: app.change_screen("main")
+            type: "bottom"
+            mode: "center"
+            left_action_items: [["clipboard-text-outline", lambda x: app.change_screen("booked_tasks")]]
+            right_action_items: [["message-reply-text-outline"]]
+            font_size: 40
+            elevation: 0

@@ -1,0 +1,33 @@
+MDFloatLayout:
+
+
+
+    MDLabel:
+        text: "Priority:"
+        size_hint: (0.8, 0.8)
+        pos_hint: {'x': 0.14, 'y': 0.05}
+        theme_text_color: "Custom"
+        text_color: get_color_from_hex('#000000')
+
+    MDLabel:
+        text: "Low"
+        pos_hint: {'x':.4, 'y':.23}
+        size_hint: (0.5, 0.5)
+        font_size: '12sp'
+
+    MDLabel:
+        text: "High"
+        pos_hint: {'x':.818, 'y':.23}
+        size_hint: (0.5, 0.5)
+        font_size: '12sp'
+
+    MDSlider:
+        min: 1
+        max: 4
+        elevation: 4
+        pos_hint: {'x': 0.38, 'y': 0.4}
+        size_hint: 0.5, 0.1
+        hint_bg_color: "white"
+        on_touch_move: app.callback(self.value)
+        on_touch_down: app.callback(self.value)
+        on_touch_up: app.callback(self.value)
