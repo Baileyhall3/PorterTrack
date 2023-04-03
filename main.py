@@ -1,6 +1,5 @@
 from kivy.lang import Builder
 import sqlite3
-
 from kivymd.app import MDApp
 from kivy.core.window import Window
 from kivy.uix.screenmanager import ScreenManager, Screen, NoTransition
@@ -43,7 +42,7 @@ class porter_track(MDApp):
     check_time=''
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        #self.ids.date_text.text = str(datetime.now().strftime('%A %d %B %Y'))
+        #self.root.ids.day_month_yr.text = str(datetime.now().strftime('%A %d %B %Y'))
         self.screen = Builder.load_file('all_screens.kv')
 
 
@@ -78,7 +77,6 @@ class porter_track(MDApp):
     def on_save_time(self, instance, value, time_range):
         time = value.strftime("%H:%M:%S")
         self.root.ids.hour_min.text = str(time)
-
 
 
     def open_nav_drawer(self, *args):
@@ -161,8 +159,8 @@ class porter_track(MDApp):
                         equipment = task[3],
                         jobtype = task[4],
                         pname = task[5],
-                        hour_min = task[6],
-                        day_month_yr = task[7],
+                        time = task[6],
+                        date = task[7],
                         priority = task[8]
                     )
                     self.root.ids.box.add_widget(add_task)
@@ -177,8 +175,8 @@ class porter_track(MDApp):
                         equipment=task[3],
                         jobtype=task[4],
                         pname=task[5],
-                        hour_min=task[6],
-                        day_month_yr=task[7],
+                        time=task[6],
+                        date=task[7],
                         priority=task[8]
                     )
                     add_task.ids.check.active = True
@@ -193,6 +191,7 @@ class porter_track(MDApp):
 
     def notification_show(self, condition):
         self.condition = condition
+
 
     def add_task(self, origin, destination, equipment, jobtype, pname, hour_min, day_month_yr, priority):
         self.origin = origin
@@ -218,8 +217,8 @@ class porter_track(MDApp):
                 equipment = created_task[3],
                 jobtype = created_task[4],
                 pname = created_task[5],
-                hour_min = created_task[6],
-                day_month_yr = created_task[7],
+                time = created_task[6],
+                date = created_task[7],
                 priority = created_task[8]
             )
         )

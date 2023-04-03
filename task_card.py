@@ -13,7 +13,7 @@ from kivymd.uix.label import MDLabel
 class Content(MDBoxLayout):
     '''Custom content'''
 class Card(MDCard):
-    def __init__(self, app, origin, destination, equipment, jobtype, pname, day_month_yr, hour_min, priority, taskid, **kwargs):
+    def __init__(self, app, origin, destination, equipment, jobtype, pname, date, time, priority, taskid, **kwargs):
         super(Card, self).__init__(**kwargs)
         self.app = app
         self.taskid = taskid
@@ -22,8 +22,8 @@ class Card(MDCard):
         self.equipment = equipment
         self.jobtype = jobtype
         self.pname = pname
-        self.day_month_yr = day_month_yr
-        self.hour_min = hour_min
+        self.date = date
+        self.time = time
         self.priority = priority
         self.orientation = 'vertical'
         self.size_hint_y = None
@@ -37,11 +37,11 @@ class Card(MDCard):
             self.equipment,
             self.jobtype,
             self.pname,
-            self.day_month_yr,
-            self.hour_min,
+            self.date,
+            self.time,
             self.priority
         )
-        self.data.get_data()
+        #self.data.get_data()
 
 
         self.box = MDBoxLayout(

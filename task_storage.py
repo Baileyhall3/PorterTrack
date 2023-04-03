@@ -1,13 +1,13 @@
 class GetData:
-    def __init__(self, app, origin, destination, equipment, jobtype, pname, day_month_yr, hour_min, priority):
+    def __init__(self, app, origin, destination, equipment, jobtype, pname, date, time, priority):
         self.app = app
         self.origin = origin
         self.destination = destination
         self.equipment = equipment
         self.jobtype = jobtype
         self.pname = pname
-        self.day_month_yr = day_month_yr
-        self.hour_min = hour_min
+        self.date = date
+        self.time = time
         self.priority = priority
 
     def get_data(self):

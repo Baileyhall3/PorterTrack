@@ -93,29 +93,7 @@ class TaskWindow(Popup):
         )
         self.container.add_widget(self.pname)
 
-        self.day_month_yr = MDFillRoundFlatIconButton(
-            icon = "calendar-clock",
-            md_bg_color=get_color_from_hex('#4472C4'),
-            text = "Date",
-            pos_hint = {
-                'center_x': 0.2,
-                'y': 0.4
-            },
-            on_release = lambda x: self.app.show_date_picker()
-        )
-        self.container.add_widget(self.day_month_yr)
 
-        self.hour_min = MDFillRoundFlatIconButton(
-            icon = "clock",
-            md_bg_color = get_color_from_hex('#4472C4'),
-            text = "Time",
-            pos_hint = {
-                'center_x': 0.8,
-                'y': 0.4
-            },
-            on_release = lambda x: self.app.show_time_picker()
-        )
-        self.container.add_widget(self.hour_min)
 
 
 
@@ -134,8 +112,8 @@ class TaskWindow(Popup):
                 self.equipment.text,
                 self.jobtype.text,
                 self.pname.text,
-                self.day_month_yr.text,
-                self.hour_min.text,
+                self.app.day_month_yr,
+                self.app.hour_min,
                 self.app.priority
             ) if self.origin.text != '' and self.destination.text != '' and self.equipment.text != '' and self.jobtype.text != '' and self.pname.text != '' and app.check_all_fields() == True else app.warning()
         )
