@@ -22,8 +22,6 @@ Screen:
             Screen:
                 name: 'main'
 
-
-
                 ScrollView:
                     do_scroll_x: False
                     size_hint: 1, 0.92
@@ -43,8 +41,10 @@ Screen:
 
             Screen:
                 name: 'booked_tasks'
-                MDBoxLayout:
+
+                MDFloatLayout:
                     orientation: 'vertical'
+
                     MDLabel:
                         markup: True
                         text: "[i][b]Booked Tasks[b][/i]"
@@ -53,20 +53,16 @@ Screen:
                         pos_hint: {"x": 0.0, "y": 0.5}
                         size_hint: (1, 0.35)
                         background_color: (0, 0, 0, 0.2)
+
                     ScrollView:
                         id: scrollv1
                         pos_hint: {"center_y": 0.7, "center_x": 0.5}
                         size_hint: 0.9, 0.8
 
-                        MDBoxLayout:
+                        MDList:
                             id: box1
-                            orientation: 'vertical'
-                            spacing: 18
-                            padding: [10,18,10,10]
-                            size_hint_y: None
-                            height: self.minimum_height
-                            row_default_height: '100dp'
-                            row_force_default: True
+
+
 
             Screen:
                 name: 'completed_tasks'
@@ -112,6 +108,71 @@ Screen:
                         halign: "center"
                         background_color: (0, 0, 0, 0.2)
 
+            Screen:
+                name: 'task_info'
+
+                MDCard:
+                    size_hint: None, None
+                    size: 300, 400
+                    pos_hint : {"center_x": 0.5, "center_y": 0.5}
+                    elevation: 3
+                    padding: 25
+                    spacing: 25
+                    orientation: 'vertical'
+
+
+                    MDLabel:
+                        id: tasktype
+                        text: "Current Task"
+                        font_size: 28
+                        halign: 'center'
+                        size_hint_y: None
+                        height: self.texture_size[1]
+
+                    MDLabel:
+                        id: origin
+                        text: "From:"
+                        font_size: 15
+                        size_hint: (0.98, 0.5)
+                        pos_hint: {"center_x": 0.5, "y": 0.9}
+
+                    MDLabel:
+                        id: destination
+                        text: "To:"
+                        font_size: 15
+                        size_hint: (0.98, 1)
+                        pos_hint: {"center_x": 0.5, "y": 0.85}
+
+                    MDLabel:
+                        id: equipment
+                        text: "Using:"
+                        font_size: 15
+                        size_hint: (0.98, 1)
+                        pos_hint: {"center_x": 0.5, "y": 0.8}
+
+                    MDLabel:
+                        id: pname
+                        text: "Patient Name:"
+                        font_size: 15
+                        size_hint: (0.98, 1)
+                        pos_hint: {"center_x": 0.5, "y": 0.75}
+
+                    MDRaisedButton
+                        text: "COMPLETE"
+                        size_hint: (0.4, 1)
+                        pos_hint: {"x": 0.5, "y": 0.05}
+
+                    MDFlatButton
+                        text: "CANCEL"
+                        size_hint: (0.4, 1)
+                        pos_hint: {"x": 0.01, "y": 0.75}
+                        on_press:
+                            app.change_screen("main")
+
+
+
+
+
     MDNavigationDrawer:
         id: nav_drawer
         BoxLayout:
@@ -132,7 +193,7 @@ Screen:
                     OneLineIconListItem:
                         text: 'Completed Tasks'
                         on_press:
-                            app.change_screen("completed_tasks")
+                            app.change_screen("task_info")
                             app.close_nav_drawer()
                         IconLeftWidget:
                             icon: 'clipboard-check-outline'

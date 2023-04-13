@@ -3,23 +3,16 @@ import sqlite3
 from kivymd.app import MDApp
 from kivy.core.window import Window
 from kivy.uix.screenmanager import ScreenManager, Screen, NoTransition
-from kivymd.uix.navigationdrawer import MDNavigationDrawer
+from kivymd.uix.list import TwoLineAvatarIconListItem
 from create_task import TaskWindow
 from kivymd.uix.pickers import MDDatePicker, MDTimePicker
-from kivymd.uix.menu import MDDropdownMenu
 from task_card import Card
-from task_storage import GetData
-import subprocess
 from datetime import datetime
 from kivymd.uix.snackbar import Snackbar
-from kivymd.uix.dialog import MDDialog
-from kivymd.uix.button import MDFlatButton, MDRaisedButton, MDIconButton
-from kivy.utils import get_color_from_hex
-from random import randint
-from kivymd.toast import toast
 
 
 Window.size = (400, 600)
+
 
 from database import Database
 # Instantiates DB class by creating db object
@@ -42,8 +35,7 @@ class porter_track(MDApp):
     check_time=''
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        #self.root.ids.day_month_yr.text = str(datetime.now().strftime('%A %d %B %Y'))
-        self.screen = Builder.load_file('all_screens.kv')
+        self.screen = Builder.load_file('kv/all_screens.kv')
 
 
     def build(self):
@@ -74,11 +66,6 @@ class porter_track(MDApp):
         date = value.strftime('%A %d %B %Y')
         self.root.ids.day_month_yr.text = str(date)
 
-    def on_save_time(self, instance, value, time_range):
-        time = value.strftime("%H:%M:%S")
-        self.root.ids.hour_min.text = str(time)
-
-
     def open_nav_drawer(self, *args):
         nav_drawer = self.root.ids.nav_drawer
         nav_drawer.set_state("open")
@@ -95,18 +82,6 @@ class porter_track(MDApp):
 
     def warning(self):
         Snackbar(text="Please enter all fields.").open()
-
-    def mark(self, check, Card):
-        if check.active == False:
-            db.mark_task_as_complete(Card.taskid)
-        else:
-            Card.text = str(db.mark_task_as_incomplete(Card.taskid))
-
-    def delete_task(self, condition):
-        if condition == 'complete':
-            pass
-        elif condition == 'delete':
-            db.delete_task(Card.taskid)
 
 
     def open_task_window(self):
@@ -145,7 +120,6 @@ class porter_track(MDApp):
         self.check_time = 'ok'
 
     def on_start(self):
-        '''This is to load the saved tasks and add them to list widget'''
         try:
             completed_tasks, incompleted_tasks = db.get_tasks()
 
@@ -153,7 +127,7 @@ class porter_track(MDApp):
                 for task in incompleted_tasks:
                     add_task = Card(
                         app,
-                        taskid = task[0],
+                        pk = task[0],
                         origin = task[1],
                         destination = task[2],
                         equipment = task[3],
@@ -163,13 +137,13 @@ class porter_track(MDApp):
                         date = task[7],
                         priority = task[8]
                     )
-                    self.root.ids.box.add_widget(add_task)
+                    self.root.ids.tasklist.add_widget(add_task)
 
             if completed_tasks != []:
                 for task in completed_tasks:
                     add_task = Card(
                         app,
-                        taskid=task[0],
+                        pk=task[0],
                         origin=task[1],
                         destination=task[2],
                         equipment=task[3],
@@ -180,7 +154,7 @@ class porter_track(MDApp):
                         priority=task[8]
                     )
                     add_task.ids.check.active = True
-                    self.root.ids.box.add_widget(add_task)
+                    self.root.ids.tasklist.add_widget(add_task)
 
         except Exception as e:
             print(e)
@@ -189,10 +163,8 @@ class porter_track(MDApp):
     def callback(self, slider_value):
         self.priority = int(slider_value)
 
-    def notification_show(self, condition):
-        self.condition = condition
 
-
+    # Function for adding a task to the system
     def add_task(self, origin, destination, equipment, jobtype, pname, hour_min, day_month_yr, priority):
         self.origin = origin
         self.destination = destination
@@ -211,7 +183,7 @@ class porter_track(MDApp):
         self.card.add_widget(
             Card(
                 app,
-                taskid = created_task[0],
+                pk = created_task[0],
                 origin = created_task[1],
                 destination = created_task[2],
                 equipment = created_task[3],
@@ -222,59 +194,17 @@ class porter_track(MDApp):
                 priority = created_task[8]
             )
         )
-        #origin.text = ''
-        #destination.text = ''
-        #equipment.text = ''
-        #jobtype.text = ''
-        #pname.text = ''
 
-    def delete_all(self):
-        self.dialog = MDDialog(
-            title = "Clear all tasks?",
-            text = "This will remove all tasks and restart application.",
-            buttons = [
-                MDFlatButton(
-                    text = "CANCEL",
-                    on_release = lambda x: self.dialog.dismiss()
-                ),
-                MDRaisedButton(
-                    text = "DELETE",
-                    md_bg_color = get_color_from_hex('FF0000'),
-                    on_press = lambda x: self.restart(),
-                    on_release = lambda x: self.dialog.dismiss()
-                ),
-            ],
-        )
-        self.dialog.open()
+        def mark_complete(self, Card):
+            db.mark_task_as_complete(Card.taskid)
+            self.card.remove_widget(Card)
+            print("Task Completed")
 
-
-
-
-    def delcompleted_dialog_box(self):
-        self.delcompleted_dialog = MDDialog(
-            title = "Clear all completed tasks?",
-            text = "This will delete all tasks which have been completed.",
-            buttons = [
-                MDFlatButton(
-                    text = "CANCEL",
-                    on_release = lambda x: self.delcompleted_dialog.dismiss()
-                ),
-                MDRaisedButton(
-                    text = "DELETE",
-                    md_bg_color = get_color_from_hex('FF0000'),
-                    on_press = lambda x: self.delete_completed(),
-                    on_release = lambda x: self.delcompleted_dialog.dismiss()
-                ),
-            ],
-        )
-        self.delcompleted_dialog.open()
-
-    def delete_completed(self):
-        delete = open('db_files\\completed_tasks.txt', 'w')
-        delete.write('COMPLETED TASKS: ')
-        toast("Successfully deleted all completed tasks")
-
-
+        def delete_task(self, card_info):
+            db.delete_task(card_info.pk)
+            print("Task deleted")
+            self.card = self.root.ids.card_info
+            self.card.remove_widget(card_info)
 
 
 if __name__=='__main__':

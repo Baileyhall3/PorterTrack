@@ -1,6 +1,8 @@
 import sqlite3
 
 
+
+
 class Database:
     def __init__(self):
         self.con = sqlite3.connect('pt_task_db.db')
@@ -37,11 +39,11 @@ class Database:
     def get_tasks(self):
         # Getting all complete and incomplete tasks
 
-        complete_tasks = self.cursor.execute("SELECT id, origin, destination, equipment, jobtype, pname, day_month_yr, hour_min, priority FROM tasks WHERE completed = 1").fetchall()
+        completed_tasks = self.cursor.execute("SELECT id, origin, destination, equipment, jobtype, pname, day_month_yr, hour_min, priority FROM tasks WHERE completed = 1").fetchall()
 
-        incomplete_tasks = self.cursor.execute("SELECT id, origin, destination, equipment, jobtype, pname, day_month_yr, hour_min, priority FROM tasks WHERE completed = 0").fetchall()
+        incompleted_tasks = self.cursor.execute("SELECT id, origin, destination, equipment, jobtype, pname, day_month_yr, hour_min, priority FROM tasks WHERE completed = 0").fetchall()
 
-        return incomplete_tasks, complete_tasks
+        return incompleted_tasks, completed_tasks
 
     '''UPDATING the tasks status'''
 
@@ -60,6 +62,10 @@ class Database:
     '''Deleting the task'''
     def delete_task(self, taskid):
         self.cursor.execute("DELETE FROM tasks WHERE id=?", (taskid,))
+        self.con.commit()
+
+    def delete_all(self):
+        self.cursor.execute("DELETE FROM tasks")
         self.con.commit()
 
     '''Closing the connection '''

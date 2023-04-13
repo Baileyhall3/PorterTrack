@@ -9,14 +9,18 @@ from kivymd.uix.chip import MDChip
 from kivy.utils import get_color_from_hex
 from kivymd.uix.label import MDLabel
 
+from database import Database
+# Instantiates DB class by creating db object
+db = Database()
 
 class Content(MDBoxLayout):
     '''Custom content'''
 class Card(MDCard):
-    def __init__(self, app, origin, destination, equipment, jobtype, pname, date, time, priority, taskid, **kwargs):
+
+    def __init__(self, app, origin, destination, equipment, jobtype, pname, date, time, priority, pk=None, **kwargs):
         super(Card, self).__init__(**kwargs)
         self.app = app
-        self.taskid = taskid
+        self.pk = pk
         self.origin = origin
         self.destination = destination
         self.equipment = equipment
@@ -29,19 +33,6 @@ class Card(MDCard):
         self.size_hint_y = None
         self.height = 150
         self.float = MDFloatLayout()
-
-        self.data = GetData(
-            self.priority,
-            self.origin,
-            self.destination,
-            self.equipment,
-            self.jobtype,
-            self.pname,
-            self.date,
-            self.time,
-            self.priority
-        )
-        #self.data.get_data()
 
 
         self.box = MDBoxLayout(
@@ -56,7 +47,10 @@ class Card(MDCard):
             padding = 8
         )
 
+
+        # Container for the task
         self.task_info = MDExpansionPanel(
+            #name = 'card_info',
             content = TwoLineListItem(
                 text = self.jobtype,
                 secondary_text = "Using: " + self.equipment
@@ -75,9 +69,10 @@ class Card(MDCard):
         self.float.add_widget(self.task_info)
 
 
+        # Button for completing a task
         self.complete = MDFillRoundFlatIconButton(
             icon = 'calendar-check',
-            text = "Save",
+            text = "Complete",
             size_hint = (None, None),
             size = (35, 35),
             #elevation=10,
@@ -85,14 +80,15 @@ class Card(MDCard):
             text_color = [1, 1, 1, 1]
         )
         self.complete.bind(
-            on_press = lambda x: self.app.mark(app.check, Card)
+            on_press = lambda x: self.app.mark_complete(Card)
         )
         self.box.add_widget(self.complete)
 
 
+        # Button for cancelling/deleting a task
         self.delete = MDFillRoundFlatIconButton(
             icon = 'delete',
-            text = "Delete",
+            text = "Cancel",
             size_hint = (None, None),
             size = (35, 35),
             #elevation=10,
@@ -101,24 +97,15 @@ class Card(MDCard):
             md_bg_color = get_color_from_hex('#E3242B')
         )
         self.delete.bind(
-            on_press = lambda x: self.app.delete_task(Card, 'delete')
+            on_press = lambda x: self.app.delete_task()
         )
         self.box.add_widget(self.delete)
 
-
-        self.imp = MDChip(
-            text="Imp",
-            #icon = '',
-            pos_hint = {
-                "x": 0.8,
-                "y": 0.1
-            },
-            #color = get_color_from_hex('#3944BC')
-        )
-        if int(self.priority) == 2 or int(self.priority) == 3 or int(self.priority) == 4:
-            self.float.add_widget(self.imp)
-
+        # Adds the box widget to the screen
         self.float.add_widget(self.box)
         self.add_widget(self.float)
+
+
+
 
 

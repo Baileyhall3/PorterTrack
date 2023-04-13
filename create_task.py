@@ -94,9 +94,6 @@ class TaskWindow(Popup):
         self.container.add_widget(self.pname)
 
 
-
-
-
         self.save_button = MDFloatingActionButton(
             icon = "content-save",
             md_bg_color=get_color_from_hex('#4472C4'),
@@ -138,6 +135,6 @@ class TaskWindow(Popup):
         )
         self.container.add_widget(self.cancel_button)
 
-        self.kv_file=Builder.load_file('task_window.kv')
+        self.kv_file=Builder.load_file('kv/task_window.kv')
         self.container.add_widget(self.kv_file)
         self.add_widget(self.container)
