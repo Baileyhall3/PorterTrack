@@ -9,10 +9,6 @@ from kivymd.uix.chip import MDChip
 from kivy.utils import get_color_from_hex
 from kivymd.uix.label import MDLabel
 
-from database import Database
-# Instantiates DB class by creating db object
-db = Database()
-
 class Content(MDBoxLayout):
     '''Custom content'''
 class Card(MDCard):

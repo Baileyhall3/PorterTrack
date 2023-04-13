@@ -1,6 +1,28 @@
+<ListItemWithCheckbox>:
+    id: the_list_item
+    markup: True
+    on_press:
+        app.change_screen("task_info")
+
+    LeftCheckbox:
+        id: check
+        on_release:
+            root.mark_complete(check, the_list_item)
+
+
+    IconRightWidget:
+        icon: 'trash-can-outline'
+        theme_text_color: "Custom"
+        text_color: 1, 0, 0, 1
+        on_release:
+            root.delete_task(the_list_item)
+
+<TaskInfo>:
+    id: task_info
+
+
+
 Screen:
-
-
 
     MDTopAppBar:
         id: topbar
@@ -27,15 +49,9 @@ Screen:
                     size_hint: 1, 0.92
                     pos_hint: {"top": 0.75}
 
-                    MDBoxLayout:
-                        id: box
-                        orientation: 'vertical'
-                        spacing: 18
-                        padding: [10,18,10,10]
-                        size_hint_y: None
-                        height: self.minimum_height
-                        row_default_height: '100dp'
-                        row_force_default: True
+                    MDList:
+                        id: container1
+
 
 
 
@@ -168,6 +184,53 @@ Screen:
                         pos_hint: {"x": 0.01, "y": 0.75}
                         on_press:
                             app.change_screen("main")
+
+            Screen:
+                name: 'complete_dialog_box'
+
+                MDCard:
+                    size_hint: None, None
+                    size: 250, 200
+                    pos_hint : {"center_x": 0.5, "center_y": 0.5}
+                    elevation: 3
+                    padding: 25
+                    spacing: 25
+                    orientation: 'vertical'
+
+                    MDLabel:
+                        text: "Complete Task"
+                        font_size: 18
+                        halign: 'center'
+                        size_hint_y: None
+                        height: self.texture_size[1]
+
+                    MDLabel:
+                        text: "Would you like to complete the current task?"
+                        font_size: 14
+                        halign: 'center'
+                        size_hint_y: None
+
+                    MDFloatLayout:
+
+                        MDFillRoundFlatIconButton
+                            icon: "check"
+                            text: "YES"
+                            theme_text_color: "Custom"
+                            text_color: "white"
+                            pos_hint: {'x': 0.65, 'y': 0.6}
+                            on_release:
+                                app.mark_complete(check, the_list_item)
+
+                        MDFillRoundFlatIconButton
+                            icon: "window-close"
+                            text: "NO"
+                            theme_text_color: "Custom"
+                            text_color: "white"
+                            md_bg_color: "red"
+                            pos_hint: {'x': 0.01, 'y': 0.6}
+                            on_press:
+                                app.change_screen("main")
+
 
 
 

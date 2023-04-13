@@ -3,7 +3,9 @@ import sqlite3
 from kivymd.app import MDApp
 from kivy.core.window import Window
 from kivy.uix.screenmanager import ScreenManager, Screen, NoTransition
-from kivymd.uix.list import TwoLineAvatarIconListItem
+from kivymd.uix.list import TwoLineAvatarIconListItem, ThreeLineAvatarIconListItem, ILeftBodyTouch
+from kivymd.uix.selectioncontrol import MDCheckbox
+
 from create_task import TaskWindow
 from kivymd.uix.pickers import MDDatePicker, MDTimePicker
 from task_card import Card
@@ -28,6 +30,33 @@ class BookedTasks(Screen):
 class WindowManager(ScreenManager):
     sm = ScreenManager(transition=NoTransition())
     pass
+
+class ListItemWithCheckbox(ThreeLineAvatarIconListItem):
+    def __init__(self, pk=None, **kwargs):
+        super().__init__(**kwargs)
+        self.pk = pk
+
+    def mark_complete(self, check, the_list_item):
+        self.parent.remove_widget(the_list_item)
+        if check.active == True:
+            db.mark_task_as_complete(the_list_item.pk)
+        print("Task Completed")
+        Snackbar(text="Task completed.").open()
+
+    def delete_task(self, the_list_item):
+        self.parent.remove_widget(the_list_item)
+        db.delete_task(the_list_item.pk)
+        print("Task deleted")
+        Snackbar(text="Task deleted.").open()
+
+    def clear_list(self, MDList):
+        self.root.clear_widgets(MDList)
+        db.delete_all()
+        print("All tasks deleted")
+
+class LeftCheckbox(ILeftBodyTouch, MDCheckbox):
+    '''custom left container'''
+
 
 class porter_track(MDApp):
     condition=''
@@ -83,7 +112,6 @@ class porter_track(MDApp):
     def warning(self):
         Snackbar(text="Please enter all fields.").open()
 
-
     def open_task_window(self):
         pop_screen = TaskWindow(app)
         pop_screen.open()
@@ -125,36 +153,24 @@ class porter_track(MDApp):
 
             if incompleted_tasks != []:
                 for task in incompleted_tasks:
-                    add_task = Card(
-                        app,
-                        pk = task[0],
-                        origin = task[1],
-                        destination = task[2],
-                        equipment = task[3],
-                        jobtype = task[4],
-                        pname = task[5],
-                        time = task[6],
-                        date = task[7],
-                        priority = task[8]
+                    add_task1 = ListItemWithCheckbox(
+                        pk=task[0],
+                        text='[b]' + task[5] + '[/b]',
+                        secondary_text=task[1],
+                        tertiary_text=task[2]
                     )
-                    self.root.ids.tasklist.add_widget(add_task)
+                    self.root.ids.container1.add_widget(add_task1)
 
             if completed_tasks != []:
                 for task in completed_tasks:
-                    add_task = Card(
-                        app,
+                    add_task1 = ListItemWithCheckbox(
                         pk=task[0],
-                        origin=task[1],
-                        destination=task[2],
-                        equipment=task[3],
-                        jobtype=task[4],
-                        pname=task[5],
-                        time=task[6],
-                        date=task[7],
-                        priority=task[8]
+                        text='[b]' + task[5] + '[/b]',
+                        secondary_text=task[1],
+                        tertiary_text=task[2]
                     )
-                    add_task.ids.check.active = True
-                    self.root.ids.tasklist.add_widget(add_task)
+                    add_task1.ids.check.active = True
+                    self.root.ids.container1.add_widget(add_task1)
 
         except Exception as e:
             print(e)
@@ -195,17 +211,18 @@ class porter_track(MDApp):
             )
         )
 
-        def mark_complete(self, Card):
-            db.mark_task_as_complete(Card.taskid)
-            self.card.remove_widget(Card)
-            print("Task Completed")
 
-        def delete_task(self, card_info):
-            db.delete_task(card_info.pk)
-            print("Task deleted")
-            self.card = self.root.ids.card_info
-            self.card.remove_widget(card_info)
 
+    def add_task1(self, origin, destination, equipment, jobtype, pname, hour_min, day_month_yr, priority):
+        created_task = db.create_task(origin, destination, equipment, jobtype, pname, day_month_yr, hour_min, priority)
+
+        self.root.ids['container1'].add_widget(ListItemWithCheckbox(
+            pk=created_task[0],
+            text='[b]'+created_task[5]+'[/b]',
+            secondary_text=created_task[1],
+            tertiary_text=created_task[2]
+        )
+        )
 
 if __name__=='__main__':
     app = porter_track()

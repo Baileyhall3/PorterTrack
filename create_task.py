@@ -103,7 +103,7 @@ class TaskWindow(Popup):
             },
         )
         self.save_button.bind(
-            on_press = lambda x: self.app.add_task(
+            on_press = lambda x: self.app.add_task1(
                 self.origin.text,
                 self.destination.text,
                 self.equipment.text,
