@@ -45,8 +45,12 @@ class Database:
 
         return incompleted_tasks, completed_tasks
 
-    '''UPDATING the tasks status'''
+    def get_task_info(self):
+        task_info = self.cursor.execute("SELECT id, origin, destination, equipment, jobtype, pname, day_month_yr, hour_min, priority FROM tasks")
+        return task_info
 
+
+    '''UPDATING the tasks status'''
     def mark_task_as_complete(self, taskid):
         self.cursor.execute("UPDATE tasks SET completed=1 WHERE id=?", (taskid,))
         self.con.commit()

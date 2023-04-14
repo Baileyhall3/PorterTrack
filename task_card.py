@@ -46,7 +46,6 @@ class Card(MDCard):
 
         # Container for the task
         self.task_info = MDExpansionPanel(
-            #name = 'card_info',
             content = TwoLineListItem(
                 text = self.jobtype,
                 secondary_text = "Using: " + self.equipment

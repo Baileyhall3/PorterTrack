@@ -2,13 +2,12 @@
     id: the_list_item
     markup: True
     on_press:
-        app.change_screen("task_info")
+        self.show_task_info_dialog()
 
     LeftCheckbox:
         id: check
         on_release:
             root.mark_complete(check, the_list_item)
-
 
     IconRightWidget:
         icon: 'trash-can-outline'
@@ -17,8 +16,79 @@
         on_release:
             root.delete_task(the_list_item)
 
-<TaskInfo>:
+<DialogContent>:
     id: task_info
+    size_hint: 1, None
+    size: 300, 400
+    pos_hint : {"center_x": 0.5, "center_y": 0.5}
+    elevation: 3
+    padding: 25
+    spacing: "10dp"
+    orientation: 'vertical'
+
+
+    MDLabel:
+        id: tasktype
+        text: "Current Task"
+        font_size: 28
+        halign: 'center'
+        size_hint_y: None
+        height: self.texture_size[1]
+
+    MDLabel:
+        id: origin
+        text: "From:"
+        font_size: 15
+        size_hint: (0.98, 0.5)
+        pos_hint: {"center_x": 0.5, "y": 0.9}
+
+    MDLabel:
+        id: destination
+        text: "To:"
+        font_size: 15
+        size_hint: (0.98, 1)
+        pos_hint: {"center_x": 0.5, "y": 0.85}
+
+    MDLabel:
+        id: equipment
+        text: "Using:"
+        font_size: 15
+        size_hint: (0.98, 1)
+        pos_hint: {"center_x": 0.5, "y": 0.8}
+
+    MDLabel:
+        id: time
+        text: "Time:"
+        font_size: 15
+        size_hint: (0.98, 1)
+        pos_hint: {"center_x": 0.5, "y": 0.75}
+
+    MDLabel:
+        id: pname
+        text: "Patient Name:"
+        font_size: 15
+        size_hint: (0.98, 1)
+        pos_hint: {"center_x": 0.5, "y": 0.75}
+
+    MDFloatLayout:
+        MDFillRoundFlatIconButton
+            icon: "check"
+            text: "COMPLETE"
+            theme_text_color: "Custom"
+            text_color: "white"
+            pos_hint: {'x': 0.55, 'y': 0.1}
+            on_release:
+                app.mark_complete(check, the_list_item)
+
+        MDFillRoundFlatIconButton
+            icon: "window-close"
+            text: "CANCEL"
+            theme_text_color: "Custom"
+            text_color: "white"
+            md_bg_color: "red"
+            pos_hint: {'x': 0.01, 'y': 0.1}
+            on_press:
+                app.change_screen("main")
 
 
 
@@ -28,7 +98,7 @@ Screen:
         id: topbar
         markup: True
         pos_hint: {"top": 1}
-        title: "[color=#FFFFFF][b][size=48][i]Porter[/b]Track[/i][/size][/color]"
+        title: "[font=Roboto][size=48][i]PorterTrack[/i][/size][/font]"
         left_action_items: [["menu", lambda x: app.open_nav_drawer()]]
         right_action_items: [["plus", lambda x: app.open_task_window()]]
         elevation: 0.8
@@ -47,17 +117,14 @@ Screen:
                 ScrollView:
                     do_scroll_x: False
                     size_hint: 1, 0.92
-                    pos_hint: {"top": 0.75}
+                    pos_hint: {"top": 0.85}
 
                     MDList:
                         id: container1
 
 
-
-
             Screen:
                 name: 'booked_tasks'
-
                 MDFloatLayout:
                     orientation: 'vertical'
 
@@ -66,30 +133,48 @@ Screen:
                         text: "[i][b]Booked Tasks[b][/i]"
                         font_size: 18
                         halign: "center"
-                        pos_hint: {"x": 0.0, "y": 0.5}
-                        size_hint: (1, 0.35)
-                        background_color: (0, 0, 0, 0.2)
+                        pos_hint: {"x": 0.0, "y": 0.55}
+                        size_hint: (1, 0.5)
 
                     ScrollView:
-                        id: scrollv1
-                        pos_hint: {"center_y": 0.7, "center_x": 0.5}
-                        size_hint: 0.9, 0.8
+                        do_scroll_x: False
+                        pos_hint: {'y': .15, 'center_x': .5}
+                        size_hint: .9, .6
 
                         MDList:
-                            id: box1
-
+                            id: container1
 
 
             Screen:
-                name: 'completed_tasks'
+                name: 'messenger'
                 MDBoxLayout:
                     orientation: 'vertical'
+                    MDLabel:
+                        markup: True
+                        text: "[i][b]Messenger[b][/i]"
+                        font_size: 18
+                        halign: "center"
+
+            Screen:
+                name: 'completed_tasks'
+                MDFloatLayout:
+                    orientation: 'vertical'
+
                     MDLabel:
                         markup: True
                         text: "[i][b]Completed Tasks[b][/i]"
                         font_size: 18
                         halign: "center"
-                        background_color: (0, 0, 0, 0.2)
+                        pos_hint: {"x": 0.0, "y": 0.55}
+                        size_hint: (1, 0.5)
+
+                    ScrollView:
+                        do_scroll_x: False
+                        pos_hint: {'y': .15, 'center_x': .5}
+                        size_hint: .9, .6
+
+                        MDList:
+                            id: container2
 
             Screen:
                 name: 'team'
@@ -124,66 +209,6 @@ Screen:
                         halign: "center"
                         background_color: (0, 0, 0, 0.2)
 
-            Screen:
-                name: 'task_info'
-
-                MDCard:
-                    size_hint: None, None
-                    size: 300, 400
-                    pos_hint : {"center_x": 0.5, "center_y": 0.5}
-                    elevation: 3
-                    padding: 25
-                    spacing: 25
-                    orientation: 'vertical'
-
-
-                    MDLabel:
-                        id: tasktype
-                        text: "Current Task"
-                        font_size: 28
-                        halign: 'center'
-                        size_hint_y: None
-                        height: self.texture_size[1]
-
-                    MDLabel:
-                        id: origin
-                        text: "From:"
-                        font_size: 15
-                        size_hint: (0.98, 0.5)
-                        pos_hint: {"center_x": 0.5, "y": 0.9}
-
-                    MDLabel:
-                        id: destination
-                        text: "To:"
-                        font_size: 15
-                        size_hint: (0.98, 1)
-                        pos_hint: {"center_x": 0.5, "y": 0.85}
-
-                    MDLabel:
-                        id: equipment
-                        text: "Using:"
-                        font_size: 15
-                        size_hint: (0.98, 1)
-                        pos_hint: {"center_x": 0.5, "y": 0.8}
-
-                    MDLabel:
-                        id: pname
-                        text: "Patient Name:"
-                        font_size: 15
-                        size_hint: (0.98, 1)
-                        pos_hint: {"center_x": 0.5, "y": 0.75}
-
-                    MDRaisedButton
-                        text: "COMPLETE"
-                        size_hint: (0.4, 1)
-                        pos_hint: {"x": 0.5, "y": 0.05}
-
-                    MDFlatButton
-                        text: "CANCEL"
-                        size_hint: (0.4, 1)
-                        pos_hint: {"x": 0.01, "y": 0.75}
-                        on_press:
-                            app.change_screen("main")
 
             Screen:
                 name: 'complete_dialog_box'
@@ -232,10 +257,6 @@ Screen:
                                 app.change_screen("main")
 
 
-
-
-
-
     MDNavigationDrawer:
         id: nav_drawer
         BoxLayout:
@@ -256,7 +277,7 @@ Screen:
                     OneLineIconListItem:
                         text: 'Completed Tasks'
                         on_press:
-                            app.change_screen("task_info")
+                            app.change_screen("completed_tasks")
                             app.close_nav_drawer()
                         IconLeftWidget:
                             icon: 'clipboard-check-outline'
@@ -294,6 +315,6 @@ Screen:
             type: "bottom"
             mode: "center"
             left_action_items: [["clipboard-text-outline", lambda x: app.change_screen("booked_tasks")]]
-            right_action_items: [["message-reply-text-outline"]]
+            right_action_items: [["message-reply-text-outline", lambda x: app.change_screen("messenger")]]
             font_size: 40
             elevation: 0

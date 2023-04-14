@@ -3,9 +3,12 @@ import sqlite3
 from kivymd.app import MDApp
 from kivy.core.window import Window
 from kivy.uix.screenmanager import ScreenManager, Screen, NoTransition
+from kivymd.uix.boxlayout import MDBoxLayout
+from kivymd.uix.card import MDCard
+from kivymd.uix.dialog import MDDialog
+from kivymd.uix.label import MDLabel
 from kivymd.uix.list import TwoLineAvatarIconListItem, ThreeLineAvatarIconListItem, ILeftBodyTouch
 from kivymd.uix.selectioncontrol import MDCheckbox
-
 from create_task import TaskWindow
 from kivymd.uix.pickers import MDDatePicker, MDTimePicker
 from task_card import Card
@@ -20,7 +23,6 @@ from database import Database
 # Instantiates DB class by creating db object
 db = Database()
 
-
 class HomeScreen(Screen):
     pass
 
@@ -28,21 +30,26 @@ class BookedTasks(Screen):
     pass
 
 class WindowManager(ScreenManager):
-    sm = ScreenManager(transition=NoTransition())
     pass
 
+# Class for the task entity
 class ListItemWithCheckbox(ThreeLineAvatarIconListItem):
+    task_info_dialog = None
     def __init__(self, pk=None, **kwargs):
         super().__init__(**kwargs)
         self.pk = pk
 
+    # Marks an item as complete
     def mark_complete(self, check, the_list_item):
         self.parent.remove_widget(the_list_item)
-        if check.active == True:
+        if check.active == False:
             db.mark_task_as_complete(the_list_item.pk)
+        else:
+            the_list_item.text = str(db.mark_task_as_incomplete(the_list_item.pk))
         print("Task Completed")
         Snackbar(text="Task completed.").open()
 
+    # Deletes task from the system
     def delete_task(self, the_list_item):
         self.parent.remove_widget(the_list_item)
         db.delete_task(the_list_item.pk)
@@ -54,32 +61,50 @@ class ListItemWithCheckbox(ThreeLineAvatarIconListItem):
         db.delete_all()
         print("All tasks deleted")
 
+    def show_task_info_dialog(self):
+        if not self.task_info_dialog:
+            self.task_info_dialog = MDDialog(
+                type = "custom",
+                content_cls = DialogContent()
+            )
+        self.task_info_dialog.open()
+
+
 class LeftCheckbox(ILeftBodyTouch, MDCheckbox):
     '''custom left container'''
+
+
+class DialogContent(MDBoxLayout):
+    '''Dialog box for task_info'''
 
 
 class porter_track(MDApp):
     condition=''
     check_date=''
     check_time=''
+    task_info_dialog = None
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.screen = Builder.load_file('kv/all_screens.kv')
 
-
+    # Holds the styling for the file
     def build(self):
         self.theme_cls.primary_palette = "Blue"
         self.theme_cls.theme_style = "Light"
         return self.screen
 
+    # Changes the screen to the target screen
     def change_screen(self, screen_name):
         print (self.root.ids)
         screen_manager = self.root.ids['screen_manager']
         screen_manager.current = screen_name
-        #screen_manager.transition = transition
-        #sm = ScreenManager.transition = NoTransition
 
-    # Gets and saves date
+    def close_dialog(self, *args):
+        self.task_info_dialog.dismiss()
+
+
+    # Shows date picker
     def show_date_picker(self):
         date_dialog = MDDatePicker()
         date_dialog.bind(on_save = self.get_date)
@@ -103,24 +128,29 @@ class porter_track(MDApp):
         nav_drawer = self.root.ids.nav_drawer
         nav_drawer.set_state("close")
 
+    # Function to check all fields of the task window have been entered
     def check_all_fields(self):
         if self.check_time == 'ok' and self.check_date == 'ok':
             return True
         else:
             return False
 
+    # If the user has not entered any fields of the task window, display warning
     def warning(self):
         Snackbar(text="Please enter all fields.").open()
 
+    # Opens the task window
     def open_task_window(self):
         pop_screen = TaskWindow(app)
         pop_screen.open()
 
+    # Closes the task window
     def close_task_window(self, *args):
         pop_screen = TaskWindow(app)
         pop_screen.dismiss()
 
-    def get_date(self, instance, value, date_range):  # to store the date in variables
+    # Function to store date in variables
+    def get_date(self, instance, value, date_range):
         self.year = str(value.year)
         self.month = str(value.month)
         self.day = str(value.day)
@@ -134,7 +164,8 @@ class porter_track(MDApp):
         self.day_month_yr = self.day + '/' + self.month + '/' + self.year
         self.check_date = 'ok'
 
-    def get_time(self, instance, time):  # to store time in variables
+    # Function to store time in variables
+    def get_time(self, instance, time):
         self.hour = str(time.hour)
         self.min = str(time.minute)
         # adding 0 to single digit numbers in time
@@ -147,6 +178,7 @@ class porter_track(MDApp):
         self.hour_min = self.hour + ":" + self.min
         self.check_time = 'ok'
 
+    # On system start, loads up task lists
     def on_start(self):
         try:
             completed_tasks, incompleted_tasks = db.get_tasks()
@@ -166,61 +198,29 @@ class porter_track(MDApp):
                     add_task1 = ListItemWithCheckbox(
                         pk=task[0],
                         text='[b]' + task[5] + '[/b]',
-                        secondary_text=task[1],
-                        tertiary_text=task[2]
+                        secondary_text='From: ' + task[1],
+                        tertiary_text= 'To: ' + task[2]
                     )
                     add_task1.ids.check.active = True
-                    self.root.ids.container1.add_widget(add_task1)
+                    self.root.ids.container2.add_widget(add_task1)
 
         except Exception as e:
             print(e)
             pass
 
+    # Gets the value from the priority slider
     def callback(self, slider_value):
         self.priority = int(slider_value)
 
-
-    # Function for adding a task to the system
-    def add_task(self, origin, destination, equipment, jobtype, pname, hour_min, day_month_yr, priority):
-        self.origin = origin
-        self.destination = destination
-        self.equipment = equipment
-        self.jobtype = jobtype
-        self.pname = pname
-        self.hour_min = hour_min
-        self.day_month_yr = day_month_yr
-        self.priority = priority
-        #self.task_content('user')
-
-        print(origin, destination, equipment, jobtype, pname, day_month_yr, hour_min, priority)
-        created_task = db.create_task(origin, destination, equipment, jobtype, pname, day_month_yr, hour_min, priority)
-
-        self.card = self.root.ids.box
-        self.card.add_widget(
-            Card(
-                app,
-                pk = created_task[0],
-                origin = created_task[1],
-                destination = created_task[2],
-                equipment = created_task[3],
-                jobtype = created_task[4],
-                pname = created_task[5],
-                time = created_task[6],
-                date = created_task[7],
-                priority = created_task[8]
-            )
-        )
-
-
-
+    # Function for adding task to the system
     def add_task1(self, origin, destination, equipment, jobtype, pname, hour_min, day_month_yr, priority):
         created_task = db.create_task(origin, destination, equipment, jobtype, pname, day_month_yr, hour_min, priority)
 
         self.root.ids['container1'].add_widget(ListItemWithCheckbox(
             pk=created_task[0],
-            text='[b]'+created_task[5]+'[/b]',
-            secondary_text=created_task[1],
-            tertiary_text=created_task[2]
+            text ='[b]'+created_task[5]+'[/b]',
+            secondary_text = 'From: ' + created_task[1],
+            tertiary_text = 'To:' + created_task[2]
         )
         )
 

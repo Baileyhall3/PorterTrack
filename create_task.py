@@ -34,8 +34,6 @@ class TaskWindow(Popup):
                 'y': 0.85
             },
             helper_text_mode = "on_focus",
-            #mode = "fill",
-            #text_color = get_color_from_hex('#000000')
 
         )
         #self.origin.focus = True
@@ -94,12 +92,14 @@ class TaskWindow(Popup):
         self.container.add_widget(self.pname)
 
 
-        self.save_button = MDFloatingActionButton(
+        self.save_button = MDRaisedButton(
             icon = "content-save",
-            md_bg_color=get_color_from_hex('#4472C4'),
+            text = "SAVE",
+            elevation = 0,
+            size_hint=(0.4, 0.01),
             pos_hint = {
-                'x': 0.75,
-                'y': 0.01
+                'center_x': 0.5,
+                'y': 0.05
             },
         )
         self.save_button.bind(
@@ -120,20 +120,20 @@ class TaskWindow(Popup):
         self.container.add_widget(self.save_button)
 
 
-        self.cancel_button = MDFloatingActionButton(  # to go back to previous screen
-            icon="arrow-left-circle-outline",
-            #tooltip_text='back',
-            font_size="40sp",
-            md_bg_color=get_color_from_hex('#4472C4'),
-            pos_hint={
-                'x': 0.001,
-                'y': 0.001
-            },
-        )
-        self.cancel_button.bind(
-            on_release = lambda x: self.dismiss()
-        )
-        self.container.add_widget(self.cancel_button)
+       # self.cancel_button = MDFloatingActionButton(  # to go back to previous screen
+        #    icon="arrow-left-circle-outline",
+         #   #tooltip_text='back',
+          #  font_size="40sp",
+           # #md_bg_color=get_color_from_hex('#4472C4'),
+            #pos_hint={
+             #   'x': 0.001,
+              #  'y': 0.001
+            #},
+        #)
+        #self.cancel_button.bind(
+         #   on_release = lambda x: self.dismiss()
+        #)
+        #self.container.add_widget(self.cancel_button)
 
         self.kv_file=Builder.load_file('kv/task_window.kv')
         self.container.add_widget(self.kv_file)
