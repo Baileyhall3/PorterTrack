@@ -1,0 +1,12 @@
+MDFloatLayout:
+
+    MDLabel:
+        text: "Time Started: "
+        pos_hint: {'x': 0.27, 'y':.5}
+
+    MDFillRoundFlatIconButton:
+        icon:"clock"
+        text: "Time"
+        pos_hint: {'x': 0.7, 'y': 0.9}
+        on_release: app.show_start_time_picker()
+

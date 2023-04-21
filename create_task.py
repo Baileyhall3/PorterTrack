@@ -7,7 +7,6 @@ from kivy.lang import Builder
 from kivymd.uix.button import MDFloatingActionButton, MDIconButton, MDRaisedButton, MDFlatButton, MDFillRoundFlatIconButton
 from kivy.utils import get_color_from_hex
 from kivymd.uix.tooltip import MDTooltip
-#from kivymd.uix.chip import MDChip
 
 class TooltipMDIconButton(MDIconButton, MDTooltip):
     pass
@@ -36,7 +35,6 @@ class TaskWindow(Popup):
             helper_text_mode = "on_focus",
 
         )
-        #self.origin.focus = True
         self.container.add_widget(self.origin)
 
 
@@ -103,7 +101,7 @@ class TaskWindow(Popup):
             },
         )
         self.save_button.bind(
-            on_press = lambda x: self.app.add_task1(
+            on_press = lambda x: self.app.add_task(
                 self.origin.text,
                 self.destination.text,
                 self.equipment.text,

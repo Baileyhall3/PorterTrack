@@ -89,7 +89,14 @@
             on_press:
                 app.change_screen("main")
 
+<ThreeLineListItem1>:
+    id: porter_list_item
+    markup: True
 
+    IconLeftWidget:
+        icon: 'account'
+        theme_text_color: "Custom"
+        text_color: get_color_from_hex('#0099ff')
 
 Screen:
 
@@ -182,7 +189,7 @@ Screen:
 
             Screen:
                 name: 'messenger'
-                MDBoxLayout:
+                MDFloatLayout:
                     orientation: 'vertical'
                     MDLabel:
                         markup: True
@@ -192,13 +199,34 @@ Screen:
 
             Screen:
                 name: 'team'
-                MDBoxLayout:
+                MDFloatLayout:
                     orientation: 'vertical'
+
                     MDLabel:
                         markup: True
                         text: "[i][b]My Team[b][/i]"
                         font_size: 18
                         halign: "center"
+                        pos_hint: {"x": 0.0, "y": 0.8}
+                        size_hint: (1, 0.08)
+                        theme_text_color: "Custom"
+                        md_bg_color: .7, .7, .7, .6
+                        text_color: get_color_from_hex('#0099ff')
+                        font_size: '24dp'
+
+                    IconRightWidget:
+                        font_size: 30
+                        icon: 'plus'
+                        on_press: app.open_porter_window()
+
+                    ScrollView:
+                        do_scroll_x: False
+                        pos_hint: {'y': .15, 'center_x': .5}
+                        size_hint: .9, .6
+
+                        MDList:
+                            id: p_container
+
 
             Screen:
                 name: 'stats'
@@ -336,6 +364,7 @@ Screen:
                             app.close_nav_drawer()
                         IconLeftWidget:
                             icon: 'clipboard-check-outline'
+
                     OneLineIconListItem:
                         text: 'My Team'
                         on_press:
@@ -343,6 +372,7 @@ Screen:
                             app.close_nav_drawer()
                         IconLeftWidget:
                             icon: 'account-group'
+
                     OneLineIconListItem:
                         text: 'My Stats'
                         on_press:
@@ -350,6 +380,7 @@ Screen:
                             app.close_nav_drawer()
                         IconLeftWidget:
                             icon: 'chart-line'
+
                     OneLineIconListItem:
                         text: 'Settings'
                         on_press:
@@ -357,6 +388,7 @@ Screen:
                             app.close_nav_drawer()
                         IconLeftWidget:
                             icon: 'cog-outline'
+
                     OneLineIconListItem:
                         text: 'Logout'
                         on_press:

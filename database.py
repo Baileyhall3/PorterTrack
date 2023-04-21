@@ -1,11 +1,11 @@
 import sqlite3
 
-class porterDB:
+class Database:
     def __init__(self):
-        self.con = sqlite3.connect('porter.db')
+        self.con = sqlite3.connect('porter_track_db.db')
         self.cursor = self.con.cursor()
+        self.create_task_table()
         self.create_porter_table()
-
     def create_porter_table(self):
         self.cursor.execute("""CREATE TABLE if not exists porters(
         porter_id integer PRIMARY KEY AUTOINCREMENT,
@@ -17,16 +17,14 @@ class porterDB:
         supervisor BOOLEAN NOT NULL CHECK (supervisor IN(0, 1)) 
         )""")
 
-    def add_porter(self, porter_firstname, porter_surname, start_time, tasks_completed):
-        self.cursor.execute(
-            "INSERT INTO porters(porter_firstname, porter_surname, start_time, tasks_completed, available, supervisor) VALUES(?, ?, ?, ?, ?, ?)",
-            (porter_firstname, porter_surname, start_time, tasks_completed, 1, 0))
+    def add_porter(self, porter_firstname, porter_surname, start_time):
+        self.cursor.execute("INSERT INTO porters(porter_firstname, porter_surname, start_time, tasks_completed, available, supervisor) VALUES(?, ?, ?, ?, ?, ?)",
+                            (porter_firstname, porter_surname, start_time, 0, 1, 0))
         self.con.commit()
 
         # Getting the last entered item to add in the list
-        new_porter = self.cursor.execute(
-            "SELECT porter_id, porter_firstname, porter_surname, start_time, tasks_completed, available, supervisor FROM porters WHERE porter_firstname = ? and available = 1",
-            (porter_firstname,)).fetchall()
+        new_porter = self.cursor.execute("SELECT porter_id, porter_firstname, porter_surname, start_time FROM porters WHERE porter_firstname = ? and available = 1",
+                                         (porter_firstname,)).fetchall()
         return new_porter[-1]
 
     def get_porters(self):
@@ -45,16 +43,14 @@ class porterDB:
         self.cursor.execute("UPDATE porters SET available=0 WHERE porter_id=?", (p_id,))
         self.con.commit()
 
+    def mark_supervisor(self, p_id):
+        self.cursor.execute("UPDATE porters SET supervisor=1 WHERE porter_id=?", (p_id,))
+        self.con.commit()
+
     def remove_porter(self, p_id):
         self.cursor.execute("DELETE FROM porters WHERE porter_id=?", (p_id,))
         self.con.commit()
 
-
-class Database:
-    def __init__(self):
-        self.con = sqlite3.connect('porter_tasks_db.db')
-        self.cursor = self.con.cursor()
-        self.create_task_table()
 
     def create_task_table(self):
         self.cursor.execute("""CREATE TABLE if not exists tasks(
@@ -67,8 +63,9 @@ class Database:
         day_month_yr varchar(50) NOT NULL,
         hour_min varchar(50) NOT NULL,
         priority integer NOT NULL,
-        completed BOOLEAN NOT NULL CHECK (completed IN(0, 1))
-        
+        completed BOOLEAN NOT NULL CHECK (completed IN(0, 1)),
+        assigned_porter integer NULL,
+        FOREIGN KEY(assigned_porter) REFERENCES porters(porter_id)
         )""")
 
 
