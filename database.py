@@ -1,10 +1,58 @@
 import sqlite3
 
+class porterDB:
+    def __init__(self):
+        self.con = sqlite3.connect('porter.db')
+        self.cursor = self.con.cursor()
+        self.create_porter_table()
+
+    def create_porter_table(self):
+        self.cursor.execute("""CREATE TABLE if not exists porters(
+        porter_id integer PRIMARY KEY AUTOINCREMENT,
+        porter_firstname varchar(50) NOT NULL,
+        porter_surname varchar(50) NOT NULL,
+        start_time varchar(50) NOT NULL,
+        tasks_completed integer NOT NULL,
+        available BOOLEAN NOT NULL CHECK (available IN(0, 1)),
+        supervisor BOOLEAN NOT NULL CHECK (supervisor IN(0, 1)) 
+        )""")
+
+    def add_porter(self, porter_firstname, porter_surname, start_time, tasks_completed):
+        self.cursor.execute(
+            "INSERT INTO porters(porter_firstname, porter_surname, start_time, tasks_completed, available, supervisor) VALUES(?, ?, ?, ?, ?, ?)",
+            (porter_firstname, porter_surname, start_time, tasks_completed, 1, 0))
+        self.con.commit()
+
+        # Getting the last entered item to add in the list
+        new_porter = self.cursor.execute(
+            "SELECT porter_id, porter_firstname, porter_surname, start_time, tasks_completed, available, supervisor FROM porters WHERE porter_firstname = ? and available = 1",
+            (porter_firstname,)).fetchall()
+        return new_porter[-1]
+
+    def get_porters(self):
+        # Getting all available and unavailable porters
+        available_porters = self.cursor.execute("SELECT porter_id, porter_firstname, porter_surname, start_time, tasks_completed, available FROM porters WHERE available = 1").fetchall()
+
+        unavailable_porters = self.cursor.execute("SELECT porter_id, porter_firstname, porter_surname, start_time, tasks_completed, available FROM porters WHERE available = 0").fetchall()
+
+        return unavailable_porters, available_porters
+
+    def mark_porter_available(self, p_id):
+        self.cursor.execute("UPDATE porters SET available=1 WHERE porter_id=?", (p_id,))
+        self.con.commit()
+
+    def mark_porter_unavailable(self, p_id):
+        self.cursor.execute("UPDATE porters SET available=0 WHERE porter_id=?", (p_id,))
+        self.con.commit()
+
+    def remove_porter(self, p_id):
+        self.cursor.execute("DELETE FROM porters WHERE porter_id=?", (p_id,))
+        self.con.commit()
 
 
 class Database:
     def __init__(self):
-        self.con = sqlite3.connect('pt_tasks_db.db')
+        self.con = sqlite3.connect('porter_tasks_db.db')
         self.cursor = self.con.cursor()
         self.create_task_table()
 
@@ -20,6 +68,7 @@ class Database:
         hour_min varchar(50) NOT NULL,
         priority integer NOT NULL,
         completed BOOLEAN NOT NULL CHECK (completed IN(0, 1))
+        
         )""")
 
 

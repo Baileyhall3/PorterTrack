@@ -19,9 +19,10 @@ from kivymd.uix.snackbar import Snackbar
 Window.size = (400, 600)
 
 
-from database import Database
+from database import Database, porterDB
 # Instantiates DB class by creating db object
 db = Database()
+pdb = porterDB()
 
 class HomeScreen(Screen):
     pass
