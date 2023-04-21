@@ -2,7 +2,7 @@ import sqlite3
 
 class Database:
     def __init__(self):
-        self.con = sqlite3.connect('porter_track_db.db')
+        self.con = sqlite3.connect('../porter_track_db.db')
         self.cursor = self.con.cursor()
         self.create_task_table()
         self.create_porter_table()

@@ -98,6 +98,11 @@
         theme_text_color: "Custom"
         text_color: get_color_from_hex('#0099ff')
 
+    IconRightWidget:
+        icon: 'logout'
+        on_release:
+            root.remove_porter(porter_list_item)
+
 Screen:
 
     MDTopAppBar:
@@ -214,11 +219,6 @@ Screen:
                         text_color: get_color_from_hex('#0099ff')
                         font_size: '24dp'
 
-                    IconRightWidget:
-                        font_size: 30
-                        icon: 'plus'
-                        on_press: app.open_porter_window()
-
                     ScrollView:
                         do_scroll_x: False
                         pos_hint: {'y': .15, 'center_x': .5}
@@ -226,6 +226,12 @@ Screen:
 
                         MDList:
                             id: p_container
+                            OneLineAvatarIconListItem:
+                                font_size: 30
+                                text: "Add new..."
+                                icon: 'plus'
+                                on_press: app.open_porter_window()
+
 
 
             Screen:

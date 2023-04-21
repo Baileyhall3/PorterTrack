@@ -78,11 +78,17 @@ class LeftCheckbox(ILeftBodyTouch, MDCheckbox):
 class DialogContent(MDBoxLayout):
     '''Dialog box for task_info'''
 
-class ThreeLineListItem1(ThreeLineAvatarIconListItem):
+class ThreeLineListItem1(TwoLineAvatarIconListItem):
         '''Porter List item'''
         def __init__(self, pk=None, **kwargs):
             super().__init__(**kwargs)
             self.pk = pk
+
+        def remove_porter(self, porter_list_item):
+            self.parent.remove_widget(porter_list_item)
+            db.remove_porter(porter_list_item.pk)
+            print("Porter removed")
+            Snackbar(text="Porter logged out.").open()
 
 
 class porter_track(MDApp):
@@ -93,7 +99,7 @@ class porter_track(MDApp):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.screen = Builder.load_file('kv/all_screens.kv')
+        self.screen = Builder.load_file('../kv/all_screens.kv')
 
     # Holds the styling for the file
     def build(self):
@@ -243,15 +249,25 @@ class porter_track(MDApp):
                     add_task = ListItemWithCheckbox(
                         pk=task[0],
                         text='[b]' + task[5] + '[/b]',
-                        secondary_text=task[1],
-                        tertiary_text=task[2]
+                        secondary_text='From: ' + task[1],
+                        tertiary_text='To: ' + task[2]
                     )
                     add_task.ids.check.active = False
                     self.root.ids.container1.add_widget(add_task)
 
             available_porters, unavailable_porters = db.get_porters()
+
             if available_porters != []:
                 for porter in available_porters:
+                    add_new_porter = ThreeLineListItem1(
+                        pk=porter[0],
+                        text ='[b]'+porter[1]+' '+ porter[2]+'[/b]',
+                        secondary_text = 'Start time: ' + porter[3],
+                    )
+                    self.root.ids.p_container.add_widget(add_new_porter)
+
+            if unavailable_porters != []:
+                for porter in unavailable_porters:
                     add_new_porter = ThreeLineListItem1(
                         pk=porter[0],
                         text ='[b]'+porter[1]+' '+ porter[2]+'[/b]',

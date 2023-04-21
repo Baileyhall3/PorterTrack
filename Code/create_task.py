@@ -117,6 +117,6 @@ class TaskWindow(Popup):
         )
         self.container.add_widget(self.save_button)
 
-        self.kv_file=Builder.load_file('kv/task_window.kv')
+        self.kv_file=Builder.load_file('../kv/task_window.kv')
         self.container.add_widget(self.kv_file)
         self.add_widget(self.container)

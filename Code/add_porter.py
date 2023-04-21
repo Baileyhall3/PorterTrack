@@ -71,6 +71,6 @@ class PorterWindow(Popup):
         )
         self.container.add_widget(self.save_button)
 
-        self.kv_file=Builder.load_file('kv/add_porter.kv')
+        self.kv_file=Builder.load_file('../kv/add_porter.kv')
         self.container.add_widget(self.kv_file)
         self.add_widget(self.container)
