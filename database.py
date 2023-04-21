@@ -2,10 +2,9 @@ import sqlite3
 
 
 
-
 class Database:
     def __init__(self):
-        self.con = sqlite3.connect('pt_task_db.db')
+        self.con = sqlite3.connect('pt_tasks_db.db')
         self.cursor = self.con.cursor()
         self.create_task_table()
 
@@ -20,8 +19,8 @@ class Database:
         day_month_yr varchar(50) NOT NULL,
         hour_min varchar(50) NOT NULL,
         priority integer NOT NULL,
-        completed BOOLEAN NOT NULL CHECK (completed IN(0, 1)))
-        """)
+        completed BOOLEAN NOT NULL CHECK (completed IN(0, 1))
+        )""")
 
 
     def create_task(self, origin, destination, equipment, jobtype, pname, day_month_yr, hour_min, priority):
@@ -59,9 +58,8 @@ class Database:
         self.cursor.execute("UPDATE tasks SET completed=0 WHERE id=?", (taskid,))
         self.con.commit()
 
-        # returning the task text
-        task_text = self.cursor.execute("SELECT task FROM tasks WHERE id=?", (taskid,)).fetchall()
-        return task_text[0][0][0][0][0][0][0][0][0]
+        #task_text = self.cursor.execute("SELECT task FROM tasks WHERE id=?", (taskid,)).fetchall()
+        #return task_text[0][0][0][0][0][0][0][0][0]
 
     '''Deleting the task'''
     def delete_task(self, taskid):

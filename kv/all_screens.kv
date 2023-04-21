@@ -26,10 +26,9 @@
     spacing: "10dp"
     orientation: 'vertical'
 
-
     MDLabel:
-        id: tasktype
-        text: "Current Task"
+        id: jobtype
+        text: "jobtype"
         font_size: 28
         halign: 'center'
         size_hint_y: None
@@ -98,6 +97,7 @@ Screen:
         id: topbar
         markup: True
         pos_hint: {"top": 1}
+        halign: "center"
         title: "[font=Roboto][size=48][i]PorterTrack[/i][/size][/font]"
         left_action_items: [["menu", lambda x: app.open_nav_drawer()]]
         right_action_items: [["plus", lambda x: app.open_task_window()]]
@@ -114,13 +114,20 @@ Screen:
             Screen:
                 name: 'main'
 
+                MDLabel:
+                    id: notask
+                    markup: True
+                    text: "[i]No tasks to show[/i]"
+                    font_size: 16
+                    halign: "center"
+
                 ScrollView:
                     do_scroll_x: False
                     size_hint: 1, 0.92
                     pos_hint: {"top": 0.85}
 
                     MDList:
-                        id: container1
+                        id: container
 
 
             Screen:
@@ -133,8 +140,12 @@ Screen:
                         text: "[i][b]Booked Tasks[b][/i]"
                         font_size: 18
                         halign: "center"
-                        pos_hint: {"x": 0.0, "y": 0.55}
-                        size_hint: (1, 0.5)
+                        pos_hint: {"x": 0.0, "y": 0.8}
+                        size_hint: (1, 0.08)
+                        theme_text_color: "Custom"
+                        md_bg_color: .7, .7, .7, .6
+                        text_color: get_color_from_hex('#0099ff')
+                        font_size: '24dp'
 
                     ScrollView:
                         do_scroll_x: False
@@ -144,6 +155,30 @@ Screen:
                         MDList:
                             id: container1
 
+            Screen:
+                name: 'completed_tasks'
+                MDFloatLayout:
+                    orientation: 'vertical'
+
+                    MDLabel:
+                        markup: True
+                        text: "[i][b]Completed Tasks[b][/i]"
+                        font_size: 18
+                        halign: "center"
+                        pos_hint: {"x": 0.0, "y": 0.8}
+                        size_hint: (1, 0.08)
+                        theme_text_color: "Custom"
+                        md_bg_color: .7, .7, .7, .6
+                        text_color: get_color_from_hex('#0099ff')
+                        font_size: '24dp'
+
+                    ScrollView:
+                        do_scroll_x: False
+                        pos_hint: {'y': .15, 'center_x': .5}
+                        size_hint: .9, .6
+
+                        MDList:
+                            id: container2
 
             Screen:
                 name: 'messenger'
@@ -156,27 +191,6 @@ Screen:
                         halign: "center"
 
             Screen:
-                name: 'completed_tasks'
-                MDFloatLayout:
-                    orientation: 'vertical'
-
-                    MDLabel:
-                        markup: True
-                        text: "[i][b]Completed Tasks[b][/i]"
-                        font_size: 18
-                        halign: "center"
-                        pos_hint: {"x": 0.0, "y": 0.55}
-                        size_hint: (1, 0.5)
-
-                    ScrollView:
-                        do_scroll_x: False
-                        pos_hint: {'y': .15, 'center_x': .5}
-                        size_hint: .9, .6
-
-                        MDList:
-                            id: container2
-
-            Screen:
                 name: 'team'
                 MDBoxLayout:
                     orientation: 'vertical'
@@ -185,7 +199,6 @@ Screen:
                         text: "[i][b]My Team[b][/i]"
                         font_size: 18
                         halign: "center"
-                        background_color: (0, 0, 0, 0.2)
 
             Screen:
                 name: 'stats'
@@ -196,7 +209,6 @@ Screen:
                         text: "[i][b]My Stats[b][/i]"
                         font_size: 18
                         halign: "center"
-                        background_color: (0, 0, 0, 0.2)
 
             Screen:
                 name: 'settings'
@@ -207,7 +219,6 @@ Screen:
                         text: "[i][b]Settings[b][/i]"
                         font_size: 18
                         halign: "center"
-                        background_color: (0, 0, 0, 0.2)
 
 
             Screen:
@@ -224,14 +235,14 @@ Screen:
 
                     MDLabel:
                         text: "Complete Task"
-                        font_size: 18
+                        font_size: 24
                         halign: 'center'
-                        size_hint_y: None
+                        size_hint_y: 0.8
                         height: self.texture_size[1]
 
                     MDLabel:
                         text: "Would you like to complete the current task?"
-                        font_size: 14
+                        font_size: 18
                         halign: 'center'
                         size_hint_y: None
 
@@ -256,6 +267,50 @@ Screen:
                             on_press:
                                 app.change_screen("main")
 
+            Screen:
+                name: 'logout_dialog'
+
+                MDCard:
+                    size_hint: None, None
+                    size: 250, 200
+                    pos_hint : {"center_x": 0.5, "center_y": 0.5}
+                    elevation: 3
+                    padding: 25
+                    spacing: 25
+                    orientation: 'vertical'
+
+                    MDLabel:
+                        text: "Logout"
+                        font_size: 24
+                        halign: 'center'
+                        size_hint_y: 0.8
+                        height: self.texture_size[1]
+
+                    MDLabel:
+                        text: "Are you sure you want to logout?"
+                        font_size: 18
+                        halign: 'center'
+                        size_hint_y: None
+
+                    MDFloatLayout:
+
+                        MDFillRoundFlatIconButton
+                            icon: "check"
+                            text: "YES"
+                            theme_text_color: "Custom"
+                            text_color: "white"
+                            pos_hint: {'x': 0.65, 'y': 0.6}
+
+
+                        MDFillRoundFlatIconButton
+                            icon: "window-close"
+                            text: "NO"
+                            theme_text_color: "Custom"
+                            text_color: "white"
+                            md_bg_color: "red"
+                            pos_hint: {'x': 0.01, 'y': 0.6}
+                            on_press:
+                                app.change_screen("main")
 
     MDNavigationDrawer:
         id: nav_drawer
@@ -304,6 +359,9 @@ Screen:
                             icon: 'cog-outline'
                     OneLineIconListItem:
                         text: 'Logout'
+                        on_press:
+                            app.change_screen("logout_dialog")
+                            app.close_nav_drawer()
                         IconLeftWidget:
                             icon: 'logout'
 

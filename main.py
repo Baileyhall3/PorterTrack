@@ -2,7 +2,7 @@ from kivy.lang import Builder
 import sqlite3
 from kivymd.app import MDApp
 from kivy.core.window import Window
-from kivy.uix.screenmanager import ScreenManager, Screen, NoTransition
+from kivy.uix.screenmanager import ScreenManager, Screen
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.card import MDCard
 from kivymd.uix.dialog import MDDialog
@@ -41,11 +41,11 @@ class ListItemWithCheckbox(ThreeLineAvatarIconListItem):
 
     # Marks an item as complete
     def mark_complete(self, check, the_list_item):
-        self.parent.remove_widget(the_list_item)
-        if check.active == False:
+        if check.active == True:
             db.mark_task_as_complete(the_list_item.pk)
         else:
             the_list_item.text = str(db.mark_task_as_incomplete(the_list_item.pk))
+        self.parent.remove_widget(the_list_item)
         print("Task Completed")
         Snackbar(text="Task completed.").open()
 
@@ -65,7 +65,7 @@ class ListItemWithCheckbox(ThreeLineAvatarIconListItem):
         if not self.task_info_dialog:
             self.task_info_dialog = MDDialog(
                 type = "custom",
-                content_cls = DialogContent()
+                content_cls = DialogContent(),
             )
         self.task_info_dialog.open()
 
@@ -76,7 +76,6 @@ class LeftCheckbox(ILeftBodyTouch, MDCheckbox):
 
 class DialogContent(MDBoxLayout):
     '''Dialog box for task_info'''
-
 
 class porter_track(MDApp):
     condition=''
@@ -178,23 +177,18 @@ class porter_track(MDApp):
         self.hour_min = self.hour + ":" + self.min
         self.check_time = 'ok'
 
+    def empty_comp_tasks(self, empty_comp):
+        incompleted_tasks = db.get_tasks()
+        if incompleted_tasks == []:
+            self.root.ids.notask.text = 'No tasks to show.'
+
     # On system start, loads up task lists
     def on_start(self):
         try:
             completed_tasks, incompleted_tasks = db.get_tasks()
 
-            if incompleted_tasks != []:
-                for task in incompleted_tasks:
-                    add_task1 = ListItemWithCheckbox(
-                        pk=task[0],
-                        text='[b]' + task[5] + '[/b]',
-                        secondary_text=task[1],
-                        tertiary_text=task[2]
-                    )
-                    self.root.ids.container1.add_widget(add_task1)
-
             if completed_tasks != []:
-                for task in completed_tasks:
+                for task in incompleted_tasks:
                     add_task1 = ListItemWithCheckbox(
                         pk=task[0],
                         text='[b]' + task[5] + '[/b]',
@@ -203,6 +197,17 @@ class porter_track(MDApp):
                     )
                     add_task1.ids.check.active = True
                     self.root.ids.container2.add_widget(add_task1)
+
+            if incompleted_tasks != []:
+                for task in completed_tasks:
+                    add_task1 = ListItemWithCheckbox(
+                        pk=task[0],
+                        text='[b]' + task[5] + '[/b]',
+                        secondary_text=task[1],
+                        tertiary_text=task[2]
+                    )
+                    add_task1.ids.check.active = False
+                    self.root.ids.container1.add_widget(add_task1)
 
         except Exception as e:
             print(e)
@@ -220,7 +225,7 @@ class porter_track(MDApp):
             pk=created_task[0],
             text ='[b]'+created_task[5]+'[/b]',
             secondary_text = 'From: ' + created_task[1],
-            tertiary_text = 'To:' + created_task[2]
+            tertiary_text = 'To: ' + created_task[2]
         )
         )
 

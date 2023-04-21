@@ -66,7 +66,7 @@ class TaskWindow(Popup):
         self.container.add_widget(self.equipment)
 
         self.jobtype = MDTextField(
-            hint_text="Job Type...",
+            hint_text="Task Type...",
             size_hint=(0.4, 1),
             font_size='15sp',
             pos_hint={
@@ -118,22 +118,6 @@ class TaskWindow(Popup):
             on_release = lambda x: self.dismiss() if self.origin.text != '' and self.destination.text != '' and self.equipment.text != '' and self.jobtype.text != '' and self.pname.text != '' and app.check_all_fields() == True else self.dismiss == False
         )
         self.container.add_widget(self.save_button)
-
-
-       # self.cancel_button = MDFloatingActionButton(  # to go back to previous screen
-        #    icon="arrow-left-circle-outline",
-         #   #tooltip_text='back',
-          #  font_size="40sp",
-           # #md_bg_color=get_color_from_hex('#4472C4'),
-            #pos_hint={
-             #   'x': 0.001,
-              #  'y': 0.001
-            #},
-        #)
-        #self.cancel_button.bind(
-         #   on_release = lambda x: self.dismiss()
-        #)
-        #self.container.add_widget(self.cancel_button)
 
         self.kv_file=Builder.load_file('kv/task_window.kv')
         self.container.add_widget(self.kv_file)
