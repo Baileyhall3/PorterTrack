@@ -33,7 +33,7 @@ class LoginScreen(Screen):
     pass
 
 # Class for the task entity
-class ListItemWithCheckbox(ThreeLineAvatarIconListItem):
+class TaskListItem(ThreeLineAvatarIconListItem):
     task_info_dialog = None
     def __init__(self, pk=None, **kwargs):
         super().__init__(**kwargs)
@@ -76,9 +76,13 @@ class LeftCheckbox(ILeftBodyTouch, MDCheckbox):
 class DialogContent(MDBoxLayout):
     '''Dialog box for task_info'''
 
+class PorterDialogContent(MDBoxLayout):
+    '''Dialog box for porter info'''
+
 # Class for the porter entity
-class ThreeLineListItem1(TwoLineAvatarIconListItem):
-        '''Porter List item'''
+class PorterListItem(TwoLineAvatarIconListItem):
+
+        porter_info_dialog = None
         def __init__(self, pk=None, **kwargs):
             super().__init__(**kwargs)
             self.pk = pk
@@ -90,12 +94,15 @@ class ThreeLineListItem1(TwoLineAvatarIconListItem):
             Snackbar(text="Porter logged out.").open()
 
 
+
+
 # Main App class for running PorterTrack
 class porter_track(MDApp):
     condition=''
     check_date=''
     check_time=''
     task_info_dialog = None
+    porter_info_dialog = None
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -114,8 +121,19 @@ class porter_track(MDApp):
         screen_manager = self.root.ids['screen_manager']
         screen_manager.current = screen_name
 
-    def close_dialog(self, *args):
+    def close_task_dialog(self, *args):
         self.task_info_dialog.dismiss()
+
+    def show_porter_info_dialog(self):
+        if not self.porter_info_dialog:
+            self.porter_info_dialog = MDDialog(
+                type="custom",
+                content_cls=PorterDialogContent(),
+            )
+        self.porter_info_dialog.open()
+
+    def close_porter_dialog(self, *args):
+        self.porter_info_dialog.dismiss()
 
     # Shows date picker
     def show_date_picker(self):
@@ -149,6 +167,8 @@ class porter_track(MDApp):
     def close_nav_drawer(self, *args):
         nav_drawer = self.root.ids.nav_drawer
         nav_drawer.set_state("close")
+
+
 
     # Function to check all fields of the task window have been entered
     def check_all_fields(self):
@@ -253,7 +273,7 @@ class porter_track(MDApp):
 
             if completed_tasks != []:
                 for task in incompleted_tasks:
-                    add_task = ListItemWithCheckbox(
+                    add_task = TaskListItem(
                         pk=task[0],
                         text='[b]' + task[5] + '[/b]',
                         secondary_text='From: ' + task[1],
@@ -264,7 +284,7 @@ class porter_track(MDApp):
 
             if incompleted_tasks != []:
                 for task in completed_tasks:
-                    add_task = ListItemWithCheckbox(
+                    add_task = TaskListItem(
                         pk=task[0],
                         text='[b]' + task[5] + '[/b]',
                         secondary_text='From: ' + task[1],
@@ -278,7 +298,7 @@ class porter_track(MDApp):
 
             if available_porters != []:
                 for porter in available_porters:
-                    add_new_porter = ThreeLineListItem1(
+                    add_new_porter = PorterListItem(
                         pk=porter[0],
                         text ='[b]'+porter[1]+' '+ porter[2]+'[/b]',
                         secondary_text = 'Start time: ' + porter[3],
@@ -287,7 +307,7 @@ class porter_track(MDApp):
 
             if unavailable_porters != []:
                 for porter in unavailable_porters:
-                    add_new_porter = ThreeLineListItem1(
+                    add_new_porter = PorterListItem(
                         pk=porter[0],
                         text ='[b]'+porter[1]+' '+ porter[2]+'[/b]',
                         secondary_text = 'Start time: ' + porter[3],
@@ -303,7 +323,7 @@ class porter_track(MDApp):
     def add_task(self, origin, destination, equipment, jobtype, pname, day_month_yr, hour_min, priority):
         created_task = db.create_task(origin, destination, equipment, jobtype, pname, day_month_yr, hour_min, priority)
 
-        self.root.ids['container1'].add_widget(ListItemWithCheckbox(
+        self.root.ids['container1'].add_widget(TaskListItem(
             pk=created_task[0],
             text ='[b]'+created_task[5]+'[/b]',
             secondary_text = 'From: ' + created_task[1],
@@ -316,7 +336,7 @@ class porter_track(MDApp):
     def add_new_porter(self, porter_firstname, porter_surname, start_time):
         new_porter = db.add_porter(porter_firstname, porter_surname, start_time)
 
-        self.root.ids['p_container'].add_widget(ThreeLineListItem1(
+        self.root.ids['p_container'].add_widget(PorterListItem(
             pk=new_porter[0],
             text ='[b]'+new_porter[1]+' '+ new_porter[2]+'[/b]',
             secondary_text = 'Start time: ' + new_porter[3],

@@ -1,4 +1,4 @@
-<ListItemWithCheckbox>:
+<TaskListItem>:
     id: the_list_item
     markup: True
     on_press:
@@ -28,43 +28,49 @@
 
     MDLabel:
         id: jobtype
-        text: "Task Type"
+        markup: True
+        text: "[b]Patient Movement[/b]"
         font_size: 28
         halign: 'center'
         size_hint_y: None
         height: self.texture_size[1]
 
     MDLabel:
-        id: origin
-        text: "From:"
+        id: origin_label
+        markup: True
+        text: "[b]From:[/b] Ward 2"
         font_size: 15
         size_hint: (0.98, 0.5)
         pos_hint: {"center_x": 0.5, "y": 0.9}
 
     MDLabel:
         id: destination
-        text: "To:"
+        markup: True
+        text: "[b]To:[/b] X-ray"
         font_size: 15
         size_hint: (0.98, 1)
         pos_hint: {"center_x": 0.5, "y": 0.85}
 
     MDLabel:
         id: equipment
-        text: "Using:"
+        markup: True
+        text: "[b]Using:[/b] Chair"
         font_size: 15
         size_hint: (0.98, 1)
         pos_hint: {"center_x": 0.5, "y": 0.8}
 
     MDLabel:
         id: time
-        text: "Time:"
+        markup: True
+        text: "[b]Time:[/b] 15:00"
         font_size: 15
         size_hint: (0.98, 1)
         pos_hint: {"center_x": 0.5, "y": 0.75}
 
     MDLabel:
         id: pname
-        text: "Patient Name:"
+        markup: True
+        text: "[b]Patient Name:[/b] Bailey Hall"
         font_size: 15
         size_hint: (0.98, 1)
         pos_hint: {"center_x": 0.5, "y": 0.75}
@@ -89,7 +95,44 @@
             on_press:
                 app.change_screen("main")
 
-<ThreeLineListItem1>:
+<PorterDialogContent>:
+    id: porter_info
+    size_hint: 1, None
+    size: 200, 300
+    pos_hint : {"center_x": 0.5, "center_y": 0.5}
+    elevation: 3
+    padding: 25
+    spacing: "10dp"
+    orientation: 'vertical'
+
+    MDLabel:
+        id: name
+        markup: True
+        text: "[b]Bailey Hall[/b]"
+        font_size: 24
+        halign: 'center'
+        size_hint_y: 0.8
+        height: self.texture_size[1]
+
+    MDList:
+        OneLineRightIconListItem:
+            font_size: 30
+            text: "[b]Logged in at:[/b] 06:00AM"
+
+        OneLineRightIconListItem:
+            font_size: 30
+            text: "[b]Available:[/b] [color=#00FF00]Yes[/color]"
+
+        OneLineRightIconListItem:
+            font_size: 30
+            text: "[b]Assign to Task[/b]"
+            IconRightWidget:
+                icon: 'plus-circle-outline'
+                on_release:
+                    app.change_screen('booked_tasks'), app.close_porter_dialog()
+
+
+<PorterListItem>:
     id: porter_list_item
     markup: True
 
@@ -97,6 +140,8 @@
         icon: 'account'
         theme_text_color: "Custom"
         text_color: get_color_from_hex('#0099ff')
+        on_release:
+            app.show_porter_info_dialog()
 
     IconRightWidget:
         icon: 'logout'
@@ -194,8 +239,10 @@ Screen:
 
             Screen:
                 name: 'messenger'
+
                 MDFloatLayout:
                     orientation: 'vertical'
+
                     MDLabel:
                         markup: True
                         text: "[i][b]Messenger[b][/i]"
@@ -208,8 +255,19 @@ Screen:
                         text_color: get_color_from_hex('#0099ff')
                         font_size: '24dp'
 
+                    MDTextField:
+                        id: message
+                        hint_text: "Message..."
+                        mode: "round"
+                        icon_right: "arrow-right-circle-outline"
+                        size_hint_x: '0.8dp'
+                        width: 200
+                        font_size: 24
+                        pos_hint: {"center_x": 0.5, "y": 0.3}
+
             Screen:
                 name: 'team'
+
                 MDFloatLayout:
                     orientation: 'vertical'
 
@@ -232,7 +290,7 @@ Screen:
 
                         MDList:
                             id: p_container
-                            OneLineAvatarIconListItem:
+                            OneLineIconListItem:
                                 font_size: 30
                                 text: "Add new..."
                                 icon: 'plus'
@@ -240,23 +298,84 @@ Screen:
 
             Screen:
                 name: 'stats'
-                MDBoxLayout:
+
+                MDFloatLayout:
                     orientation: 'vertical'
+
                     MDLabel:
                         markup: True
                         text: "[i][b]My Stats[b][/i]"
                         font_size: 18
                         halign: "center"
+                        pos_hint: {"x": 0.0, "y": 0.8}
+                        size_hint: (1, 0.08)
+                        theme_text_color: "Custom"
+                        md_bg_color: .7, .7, .7, .6
+                        text_color: get_color_from_hex('#0099ff')
+                        font_size: '24dp'
+
+                    MDList:
+                        pos_hint: {'y': .15, 'center_x': .5}
+                        size_hint: .9, .6
+                        id: stats_container
+
+                        OneLineIconListItem:
+                            font_size: 30
+                            text: "[b]Tasks Completed Today:[/b]    0"
+                            IconLeftWidget:
+                                icon: 'clipboard-check-outline'
+
+                        OneLineIconListItem:
+                            font_size: 30
+                            text: "[b]Average Time Taken:[/b]   0mins 0secs"
+                            IconLeftWidget:
+                                icon: 'timer-outline'
+
+                        OneLineIconListItem:
+                            font_size: 30
+                            text: "[b]Distance Covered:[/b]   0km"
+                            IconLeftWidget:
+                                icon: 'walk'
 
             Screen:
                 name: 'settings'
-                MDBoxLayout:
+
+                MDFloatLayout:
                     orientation: 'vertical'
+
                     MDLabel:
                         markup: True
                         text: "[i][b]Settings[b][/i]"
                         font_size: 18
                         halign: "center"
+                        pos_hint: {"x": 0.0, "y": 0.8}
+                        size_hint: (1, 0.08)
+                        theme_text_color: "Custom"
+                        md_bg_color: .7, .7, .7, .6
+                        text_color: get_color_from_hex('#0099ff')
+                        font_size: '24dp'
+
+                    MDList:
+                        pos_hint: {'y': .15, 'center_x': .5}
+                        size_hint: .9, .6
+
+                        OneLineRightIconListItem:
+                            font_size: 30
+                            text: "[b]Accessibility[/b]"
+
+                        OneLineRightIconListItem:
+                            font_size: 30
+                            text: "[b]Display[/b]"
+
+                        OneLineRightIconListItem:
+                            font_size: 30
+                            text: "[b]Notifications[/b]"
+
+                        OneLineRightIconListItem:
+                            font_size: 30
+                            text: "[b]Dynamic Task Allocation[/b]"
+                            IconRightWidget:
+                                icon: 'toggle-switch-off-outline'
 
             Screen:
                 name: 'login'
@@ -312,7 +431,6 @@ Screen:
                         font_size: 12
                         pos_hint: {"center_x": 0.5}
                         on_press: app.clear()
-
 
             Screen:
                 name: 'complete_dialog_box'
@@ -371,7 +489,6 @@ Screen:
                     padding: 25
                     spacing: 25
                     orientation: 'vertical'
-                    elevation: 3
 
                     MDLabel:
                         text: "Logout"
@@ -410,6 +527,7 @@ Screen:
 
     MDNavigationDrawer:
         id: nav_drawer
+        elevation: 2
         BoxLayout:
             orientation: 'vertical'
             spacing: '20dp'
