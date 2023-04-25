@@ -26,6 +26,9 @@ db = Database()
 class WindowManager(ScreenManager):
     pass
 
+class MainScreen(Screen):
+    pass
+
 class LoginScreen(Screen):
     pass
 
@@ -177,6 +180,20 @@ class porter_track(MDApp):
     def close_porter_window(self, *args):
         pop_screen = PorterWindow(app)
         pop_screen.dismiss()
+
+    # Checks the entered fields of the login page against the credentials
+    def check_login_details(self):
+        if self.root.ids.user.text == "Bailey" and self.root.ids.password.text == "1234":
+            self.change_screen('main')
+            Snackbar(text="Successfully logged in as "+ self.root.ids.user.text).open()
+        else:
+            Snackbar(text="Invalid login credentials.").open()
+            self.clear()
+
+    # Clears the entered text from the login fields
+    def clear(self):
+        self.root.ids.user.text = ""
+        self.root.ids.password.text = ""
 
     # Gets the value from the priority slider
     def callback(self, slider_value):

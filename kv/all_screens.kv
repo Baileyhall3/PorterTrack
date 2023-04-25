@@ -28,7 +28,7 @@
 
     MDLabel:
         id: jobtype
-        text: self.jobtype
+        text: "Task Type"
         font_size: 28
         halign: 'center'
         size_hint_y: None
@@ -115,9 +115,8 @@ Screen:
         left_action_items: [["menu", lambda x: app.open_nav_drawer()]]
         right_action_items: [["plus", lambda x: app.open_task_window()]]
         elevation: 0.8
+
     Widget:
-
-
 
     MDNavigationLayout:
 
@@ -202,6 +201,12 @@ Screen:
                         text: "[i][b]Messenger[b][/i]"
                         font_size: 18
                         halign: "center"
+                        pos_hint: {"x": 0.0, "y": 0.8}
+                        size_hint: (1, 0.08)
+                        theme_text_color: "Custom"
+                        md_bg_color: .7, .7, .7, .6
+                        text_color: get_color_from_hex('#0099ff')
+                        font_size: '24dp'
 
             Screen:
                 name: 'team'
@@ -252,6 +257,61 @@ Screen:
                         text: "[i][b]Settings[b][/i]"
                         font_size: 18
                         halign: "center"
+
+            Screen:
+                name: 'login'
+
+                MDCard:
+                    orientation: 'vertical'
+                    size: 300, 400
+                    size_hint: None, None
+                    pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                    elevation: 2
+                    padding: 25
+                    spacing: 25
+
+                    MDLabel:
+                        text: "LOGIN"
+                        font_size: 40
+                        halign: 'center'
+                        size_hint_y: None
+                        height: self.texture_size[1]
+                        padding_y: 15
+                        text_color: get_color_from_hex('#0099ff')
+
+                    MDTextField:
+                        id: user
+                        hint_text: "User ID"
+                        mode: "round"
+                        icon_right: "account"
+                        size_hint_x: None
+                        width: 200
+                        font_size: 24
+                        pos_hint: {"center_x": 0.5}
+
+                    MDTextField:
+                        id: password
+                        hint_text: "Password"
+                        mode: "round"
+                        icon_right: "eye-off"
+                        size_hint_x: None
+                        width: 200
+                        font_size: 24
+                        pos_hint: {"center_x": 0.5}
+                        password: True
+
+                    MDRoundFlatButton:
+                        text: "LOG IN"
+                        font_size: 12
+                        pos_hint: {"center_x": 0.5}
+                        on_press:
+                            app.check_login_details()
+
+                    MDRoundFlatButton:
+                        text: "CLEAR"
+                        font_size: 12
+                        pos_hint: {"center_x": 0.5}
+                        on_press: app.clear()
 
 
             Screen:
@@ -307,10 +367,11 @@ Screen:
                     size_hint: None, None
                     size: 250, 200
                     pos_hint : {"center_x": 0.5, "center_y": 0.5}
-                    elevation: 3
+                    elevation: 2
                     padding: 25
                     spacing: 25
                     orientation: 'vertical'
+                    elevation: 3
 
                     MDLabel:
                         text: "Logout"
@@ -333,6 +394,8 @@ Screen:
                             theme_text_color: "Custom"
                             text_color: "white"
                             pos_hint: {'x': 0.65, 'y': 0.6}
+                            on_press:
+                                app.change_screen("login")
 
 
                         MDFillRoundFlatIconButton
