@@ -28,7 +28,7 @@
 
     MDLabel:
         id: jobtype
-        text: "jobtype"
+        text: self.jobtype
         font_size: 28
         halign: 'center'
         size_hint_y: None
@@ -102,6 +102,7 @@
         icon: 'logout'
         on_release:
             root.remove_porter(porter_list_item)
+
 
 Screen:
 
@@ -232,8 +233,6 @@ Screen:
                                 icon: 'plus'
                                 on_press: app.open_porter_window()
 
-
-
             Screen:
                 name: 'stats'
                 MDBoxLayout:
@@ -289,7 +288,7 @@ Screen:
                             text_color: "white"
                             pos_hint: {'x': 0.65, 'y': 0.6}
                             on_release:
-                                app.mark_complete(check, the_list_item)
+                                root.mark_complete(check, the_list_item)
 
                         MDFillRoundFlatIconButton
                             icon: "window-close"

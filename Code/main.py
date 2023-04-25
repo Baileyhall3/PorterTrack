@@ -13,25 +13,20 @@ from kivymd.uix.selectioncontrol import MDCheckbox
 from create_task import TaskWindow
 from add_porter import PorterWindow
 from kivymd.uix.pickers import MDDatePicker, MDTimePicker
-from task_card import Card
 from datetime import datetime
 from kivymd.uix.snackbar import Snackbar
 
 
 Window.size = (400, 600)
 
-
-from database import Database
 # Instantiates DB class by creating db object
+from database import Database
 db = Database()
 
-class HomeScreen(Screen):
-    pass
-
-class BookedTasks(Screen):
-    pass
-
 class WindowManager(ScreenManager):
+    pass
+
+class LoginScreen(Screen):
     pass
 
 # Class for the task entity
@@ -78,6 +73,7 @@ class LeftCheckbox(ILeftBodyTouch, MDCheckbox):
 class DialogContent(MDBoxLayout):
     '''Dialog box for task_info'''
 
+# Class for the porter entity
 class ThreeLineListItem1(TwoLineAvatarIconListItem):
         '''Porter List item'''
         def __init__(self, pk=None, **kwargs):
@@ -91,6 +87,7 @@ class ThreeLineListItem1(TwoLineAvatarIconListItem):
             Snackbar(text="Porter logged out.").open()
 
 
+# Main App class for running PorterTrack
 class porter_track(MDApp):
     condition=''
     check_date=''
@@ -100,6 +97,7 @@ class porter_track(MDApp):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.screen = Builder.load_file('../kv/all_screens.kv')
+        #self.screen = Builder.load_file('kv/login.kv')
 
     # Holds the styling for the file
     def build(self):
@@ -134,14 +132,17 @@ class porter_track(MDApp):
         time_dialog.bind(time=self.get_start_time)
         time_dialog.open()
 
+    # Function that calls when the date picker is interacted with
     def on_save(self, instance, value, date_range):
         date = value.strftime('%A %d %B %Y')
         self.root.ids.day_month_yr.text = str(date)
 
+    # Opens the navigation drawer for the user to select a screen
     def open_nav_drawer(self, *args):
         nav_drawer = self.root.ids.nav_drawer
         nav_drawer.set_state("open")
 
+    # Closes the navigation drawer
     def close_nav_drawer(self, *args):
         nav_drawer = self.root.ids.nav_drawer
         nav_drawer.set_state("close")
@@ -181,7 +182,6 @@ class porter_track(MDApp):
     def callback(self, slider_value):
         self.priority = int(slider_value)
 
-
     # Function to store date in variables
     def get_date(self, instance, value, date_range):
         self.year = str(value.year)
@@ -211,6 +211,7 @@ class porter_track(MDApp):
         self.hour_min = self.hour + ":" + self.min
         self.check_time = 'ok'
 
+    # Gets and saves the porter's start time
     def get_start_time(self, instance, time):
         self.hour = str(time.hour)
         self.min = str(time.minute)
@@ -255,6 +256,7 @@ class porter_track(MDApp):
                     add_task.ids.check.active = False
                     self.root.ids.container1.add_widget(add_task)
 
+
             available_porters, unavailable_porters = db.get_porters()
 
             if available_porters != []:
@@ -281,7 +283,7 @@ class porter_track(MDApp):
 
 
     # Function for adding task to the system
-    def add_task(self, origin, destination, equipment, jobtype, pname, hour_min, day_month_yr, priority):
+    def add_task(self, origin, destination, equipment, jobtype, pname, day_month_yr, hour_min, priority):
         created_task = db.create_task(origin, destination, equipment, jobtype, pname, day_month_yr, hour_min, priority)
 
         self.root.ids['container1'].add_widget(ListItemWithCheckbox(
@@ -292,6 +294,8 @@ class porter_track(MDApp):
         )
         )
 
+
+    # Function for adding a porter to the system
     def add_new_porter(self, porter_firstname, porter_surname, start_time):
         new_porter = db.add_porter(porter_firstname, porter_surname, start_time)
 
@@ -299,9 +303,9 @@ class porter_track(MDApp):
             pk=new_porter[0],
             text ='[b]'+new_porter[1]+' '+ new_porter[2]+'[/b]',
             secondary_text = 'Start time: ' + new_porter[3],
-            #tertiary_text = 'To: ' + new_porter[2]
         )
         )
+
 
 if __name__=='__main__':
     app = porter_track()

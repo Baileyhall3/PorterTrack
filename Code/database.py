@@ -1,11 +1,15 @@
 import sqlite3
 
 class Database:
+
+    # Initialises the DB
     def __init__(self):
         self.con = sqlite3.connect('../porter_track_db.db')
         self.cursor = self.con.cursor()
         self.create_task_table()
         self.create_porter_table()
+
+    # Adds the porters table to the DB
     def create_porter_table(self):
         self.cursor.execute("""CREATE TABLE if not exists porters(
         porter_id integer PRIMARY KEY AUTOINCREMENT,
@@ -17,6 +21,7 @@ class Database:
         supervisor BOOLEAN NOT NULL CHECK (supervisor IN(0, 1)) 
         )""")
 
+    # Function for adding a porter to the system
     def add_porter(self, porter_firstname, porter_surname, start_time):
         self.cursor.execute("INSERT INTO porters(porter_firstname, porter_surname, start_time, tasks_completed, available, supervisor) VALUES(?, ?, ?, ?, ?, ?)",
                             (porter_firstname, porter_surname, start_time, 0, 1, 0))
@@ -27,6 +32,7 @@ class Database:
                                          (porter_firstname,)).fetchall()
         return new_porter[-1]
 
+    # Gets all available and unavailable porters to display
     def get_porters(self):
         # Getting all available and unavailable porters
         available_porters = self.cursor.execute("SELECT porter_id, porter_firstname, porter_surname, start_time, tasks_completed, available FROM porters WHERE available = 1").fetchall()
@@ -35,23 +41,28 @@ class Database:
 
         return unavailable_porters, available_porters
 
+    # Marks a porter as available (sets the value to 1)
     def mark_porter_available(self, p_id):
         self.cursor.execute("UPDATE porters SET available=1 WHERE porter_id=?", (p_id,))
         self.con.commit()
 
+    # Marks a porter as unavailable (sets the value to 0)
     def mark_porter_unavailable(self, p_id):
         self.cursor.execute("UPDATE porters SET available=0 WHERE porter_id=?", (p_id,))
         self.con.commit()
 
+    # Marks the porter as a supervisor (sets the value to 1)
     def mark_supervisor(self, p_id):
         self.cursor.execute("UPDATE porters SET supervisor=1 WHERE porter_id=?", (p_id,))
         self.con.commit()
 
+    # Removes a porter from the system
     def remove_porter(self, p_id):
         self.cursor.execute("DELETE FROM porters WHERE porter_id=?", (p_id,))
         self.con.commit()
 
 
+    # Creates the tasks table and adds it to DB
     def create_task_table(self):
         self.cursor.execute("""CREATE TABLE if not exists tasks(
         id integer PRIMARY KEY AUTOINCREMENT,
@@ -69,6 +80,7 @@ class Database:
         )""")
 
 
+    # Function for adding a task to the system
     def create_task(self, origin, destination, equipment, jobtype, pname, day_month_yr, hour_min, priority):
         self.cursor.execute("INSERT INTO tasks(origin, destination, equipment, jobtype, pname, day_month_yr, hour_min, priority, completed) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)",
                             (origin, destination, equipment, jobtype, pname, day_month_yr, hour_min, priority, 0))
@@ -79,8 +91,7 @@ class Database:
                                            (origin,)).fetchall()
         return created_task[-1]
 
-    '''READ / GET the tasks'''
-
+    # Gets all completed and incompleted tasks
     def get_tasks(self):
         # Getting all complete and incomplete tasks
 
@@ -90,16 +101,18 @@ class Database:
 
         return incompleted_tasks, completed_tasks
 
+    # Gets the information of a particular task
     def get_task_info(self):
         task_info = self.cursor.execute("SELECT id, origin, destination, equipment, jobtype, pname, day_month_yr, hour_min, priority FROM tasks")
         return task_info
 
 
-    '''UPDATING the tasks status'''
+    # Marks a task as complete (sets the value to 1)
     def mark_task_as_complete(self, taskid):
         self.cursor.execute("UPDATE tasks SET completed=1 WHERE id=?", (taskid,))
         self.con.commit()
 
+    # Marks a task as incomplete (sets the value to 0)
     def mark_task_as_incomplete(self, taskid):
         self.cursor.execute("UPDATE tasks SET completed=0 WHERE id=?", (taskid,))
         self.con.commit()
@@ -107,16 +120,16 @@ class Database:
         #task_text = self.cursor.execute("SELECT task FROM tasks WHERE id=?", (taskid,)).fetchall()
         #return task_text[0][0][0][0][0][0][0][0][0]
 
-    '''Deleting the task'''
+    # Deletes a task from the system
     def delete_task(self, taskid):
         self.cursor.execute("DELETE FROM tasks WHERE id=?", (taskid,))
         self.con.commit()
 
+    # Deletes all tasks from the system
     def delete_all(self):
         self.cursor.execute("DELETE FROM tasks")
         self.con.commit()
 
-    '''Closing the connection '''
-
+    # Closes the connection to the DB
     def close_db_connection(self):
         self.con.close()
