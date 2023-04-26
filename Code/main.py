@@ -56,11 +56,6 @@ class TaskListItem(ThreeLineAvatarIconListItem):
         print("Task deleted")
         Snackbar(text="Task deleted.").open()
 
-    def clear_list(self, MDList):
-        self.root.clear_widgets(MDList)
-        db.delete_all()
-        print("All tasks deleted")
-
     def show_task_info_dialog(self):
         if not self.task_info_dialog:
             self.task_info_dialog = MDDialog(
@@ -75,6 +70,10 @@ class LeftCheckbox(ILeftBodyTouch, MDCheckbox):
 
 class DialogContent(MDBoxLayout):
     '''Dialog box for task_info'''
+    def __init__(self, pk=None, **kwargs):
+        super().__init__(**kwargs)
+        self.pk = pk
+
 
 class PorterDialogContent(MDBoxLayout):
     '''Dialog box for porter info'''
@@ -123,6 +122,11 @@ class porter_track(MDApp):
 
     def close_task_dialog(self, *args):
         self.task_info_dialog.dismiss()
+
+   # def clear_list(self):
+    #    self.root.ids.container2.clear_widgets()
+     #   db.delete_all()
+      #  print("All tasks deleted")
 
     def show_porter_info_dialog(self):
         if not self.porter_info_dialog:
@@ -276,8 +280,8 @@ class porter_track(MDApp):
                     add_task = TaskListItem(
                         pk=task[0],
                         text='[b]' + task[5] + '[/b]',
-                        secondary_text='From: ' + task[1],
-                        tertiary_text= 'To: ' + task[2]
+                        secondary_text='From: ' + task[1] + '   To: ' + task[2],
+                        tertiary_text='Time: ' + task[7]
                     )
                     add_task.ids.check.active = True
                     self.root.ids.container2.add_widget(add_task)
@@ -287,8 +291,8 @@ class porter_track(MDApp):
                     add_task = TaskListItem(
                         pk=task[0],
                         text='[b]' + task[5] + '[/b]',
-                        secondary_text='From: ' + task[1],
-                        tertiary_text='To: ' + task[2]
+                        secondary_text='From: ' + task[1] + '   To: ' + task[2],
+                        tertiary_text='Time: ' + task[7]
                     )
                     add_task.ids.check.active = False
                     self.root.ids.container1.add_widget(add_task)
@@ -326,8 +330,8 @@ class porter_track(MDApp):
         self.root.ids['container1'].add_widget(TaskListItem(
             pk=created_task[0],
             text ='[b]'+created_task[5]+'[/b]',
-            secondary_text = 'From: ' + created_task[1],
-            tertiary_text = 'To: ' + created_task[2]
+            secondary_text = 'From: ' + created_task[1] + '   To: ' + created_task[2],
+            tertiary_text = 'Time: ' + created_task[7]
         )
         )
 

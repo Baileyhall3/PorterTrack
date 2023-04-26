@@ -4,7 +4,7 @@ class Database:
 
     # Initialises the DB
     def __init__(self):
-        self.con = sqlite3.connect('../porter_track_db.db')
+        self.con = sqlite3.connect('portertrack.db')
         self.cursor = self.con.cursor()
         self.create_task_table()
         self.create_porter_table()
@@ -35,7 +35,7 @@ class Database:
     # Gets all available and unavailable porters to display
     def get_porters(self):
         # Getting all available and unavailable porters
-        available_porters = self.cursor.execute("SELECT porter_id, porter_firstname, porter_surname, start_time, tasks_completed, available FROM porters WHERE available = 1").fetchall()
+        available_porters = self.cursor.execute("SELECT porter_id, porter_firstname, porter_surname, start_time, tasks_completed, available FROM porters WHERE available = 1 ORDER BY start_time").fetchall()
 
         unavailable_porters = self.cursor.execute("SELECT porter_id, porter_firstname, porter_surname, start_time, tasks_completed, available FROM porters WHERE available = 0").fetchall()
 
@@ -95,9 +95,9 @@ class Database:
     def get_tasks(self):
         # Getting all complete and incomplete tasks
 
-        completed_tasks = self.cursor.execute("SELECT id, origin, destination, equipment, jobtype, pname, day_month_yr, hour_min, priority FROM tasks WHERE completed = 1").fetchall()
+        completed_tasks = self.cursor.execute("SELECT id, origin, destination, equipment, jobtype, pname, day_month_yr, hour_min, priority FROM tasks WHERE completed = 1 ORDER BY hour_min").fetchall()
 
-        incompleted_tasks = self.cursor.execute("SELECT id, origin, destination, equipment, jobtype, pname, day_month_yr, hour_min, priority FROM tasks WHERE completed = 0").fetchall()
+        incompleted_tasks = self.cursor.execute("SELECT id, origin, destination, equipment, jobtype, pname, day_month_yr, hour_min, priority FROM tasks WHERE completed = 0 ORDER BY hour_min").fetchall()
 
         return incompleted_tasks, completed_tasks
 
@@ -117,9 +117,6 @@ class Database:
         self.cursor.execute("UPDATE tasks SET completed=0 WHERE id=?", (taskid,))
         self.con.commit()
 
-        #task_text = self.cursor.execute("SELECT task FROM tasks WHERE id=?", (taskid,)).fetchall()
-        #return task_text[0][0][0][0][0][0][0][0][0]
-
     # Deletes a task from the system
     def delete_task(self, taskid):
         self.cursor.execute("DELETE FROM tasks WHERE id=?", (taskid,))
@@ -127,7 +124,7 @@ class Database:
 
     # Deletes all tasks from the system
     def delete_all(self):
-        self.cursor.execute("DELETE FROM tasks")
+        self.cursor.execute("DELETE FROM tasks WHERE completed = 1")
         self.con.commit()
 
     # Closes the connection to the DB
