@@ -1,5 +1,6 @@
 import sqlite3
 
+# [1] Class for the project's DB
 class Database:
 
     # Initialises the DB
@@ -93,7 +94,6 @@ class Database:
 
     # Gets all completed and incompleted tasks
     def get_tasks(self):
-        # Getting all complete and incomplete tasks
 
         completed_tasks = self.cursor.execute("SELECT id, origin, destination, equipment, jobtype, pname, day_month_yr, hour_min, priority FROM tasks WHERE completed = 1 ORDER BY hour_min").fetchall()
 

@@ -1,16 +1,12 @@
 from kivy.config import value
 from kivy.uix.popup import Popup
 from kivymd.uix.floatlayout import MDFloatLayout
-from kivymd.uix.slider import MDSlider
 from kivymd.uix.textfield import MDTextField
 from kivy.lang import Builder
-from kivymd.uix.button import MDFloatingActionButton, MDIconButton, MDRaisedButton, MDFlatButton, MDFillRoundFlatIconButton
+from kivymd.uix.button import MDRaisedButton
 from kivy.utils import get_color_from_hex
-from kivymd.uix.tooltip import MDTooltip
 
-class TooltipMDIconButton(MDIconButton, MDTooltip):
-    pass
-
+# Class for the porter creation window
 class PorterWindow(Popup):
     def __init__(self, app, **kwargs):
         super(PorterWindow, self).__init__(**kwargs)

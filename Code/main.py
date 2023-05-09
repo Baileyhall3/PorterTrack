@@ -1,14 +1,10 @@
 from kivy.lang import Builder
-import sqlite3
 from kivymd.app import MDApp
 from kivy.core.window import Window
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivymd.uix.boxlayout import MDBoxLayout
-from kivymd.uix.card import MDCard
 from kivymd.uix.dialog import MDDialog
-from kivymd.uix.label import MDLabel
-from kivymd.uix.list import TwoLineAvatarIconListItem, ThreeLineAvatarIconListItem, ILeftBodyTouch, \
-    ThreeLineRightIconListItem
+from kivymd.uix.list import TwoLineAvatarIconListItem, ThreeLineAvatarIconListItem, ILeftBodyTouch
 from kivymd.uix.selectioncontrol import MDCheckbox
 from create_task import TaskWindow
 from add_porter import PorterWindow
@@ -32,7 +28,8 @@ class MainScreen(Screen):
 class LoginScreen(Screen):
     pass
 
-# Class for the task entity
+
+# [1] Class for the task entity
 class TaskListItem(ThreeLineAvatarIconListItem):
     task_info_dialog = None
     def __init__(self, pk=None, **kwargs):
@@ -56,6 +53,7 @@ class TaskListItem(ThreeLineAvatarIconListItem):
         print("Task deleted")
         Snackbar(text="Task deleted.").open()
 
+    # Displays the task info dialog box when clicked on
     def show_task_info_dialog(self):
         if not self.task_info_dialog:
             self.task_info_dialog = MDDialog(
@@ -66,33 +64,31 @@ class TaskListItem(ThreeLineAvatarIconListItem):
 
 
 class LeftCheckbox(ILeftBodyTouch, MDCheckbox):
-    '''custom left container'''
+    ''' [1] custom left container'''
 
 class DialogContent(MDBoxLayout):
-    '''Dialog box for task_info'''
+    ''' [1] Dialog box for task_info'''
     def __init__(self, pk=None, **kwargs):
         super().__init__(**kwargs)
         self.pk = pk
 
-
 class PorterDialogContent(MDBoxLayout):
     '''Dialog box for porter info'''
+
 
 # Class for the porter entity
 class PorterListItem(TwoLineAvatarIconListItem):
 
-        porter_info_dialog = None
-        def __init__(self, pk=None, **kwargs):
-            super().__init__(**kwargs)
-            self.pk = pk
+    def __init__(self, pk=None, **kwargs):
+        super().__init__(**kwargs)
+        self.pk = pk
 
-        def remove_porter(self, porter_list_item):
-            self.parent.remove_widget(porter_list_item)
-            db.remove_porter(porter_list_item.pk)
-            print("Porter removed")
-            Snackbar(text="Porter logged out.").open()
-
-
+    # Deletes a porter object from the DB
+    def remove_porter(self, porter_list_item):
+        self.parent.remove_widget(porter_list_item)
+        db.remove_porter(porter_list_item.pk)
+        print("Porter removed")
+        Snackbar(text="Porter logged out.").open()
 
 
 # Main App class for running PorterTrack
@@ -106,7 +102,6 @@ class porter_track(MDApp):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.screen = Builder.load_file('../kv/all_screens.kv')
-        #self.screen = Builder.load_file('kv/login.kv')
 
     # Holds the styling for the file
     def build(self):
@@ -120,14 +115,11 @@ class porter_track(MDApp):
         screen_manager = self.root.ids['screen_manager']
         screen_manager.current = screen_name
 
+    # Closes the dialog box for task info
     def close_task_dialog(self, *args):
         self.task_info_dialog.dismiss()
 
-   # def clear_list(self):
-    #    self.root.ids.container2.clear_widgets()
-     #   db.delete_all()
-      #  print("All tasks deleted")
-
+    # Opens the porter info dialog box
     def show_porter_info_dialog(self):
         if not self.porter_info_dialog:
             self.porter_info_dialog = MDDialog(
@@ -136,34 +128,38 @@ class porter_track(MDApp):
             )
         self.porter_info_dialog.open()
 
+    # Closes the porter dialog box
     def close_porter_dialog(self, *args):
         self.porter_info_dialog.dismiss()
 
-    # Shows date picker
+
+    # [1] Displays date picker
     def show_date_picker(self):
         date_dialog = MDDatePicker()
         date_dialog.bind(on_save = self.get_date)
         date_dialog.open()
 
-    # Shows time picker
+
+    # [2] Displays time picker
     def show_time_picker(self):
         time_dialog = MDTimePicker()
         time_dialog.bind(time = self.get_time)
         time_dialog.open()
 
-    # Shows start time picker
+    # Displays start time picker
     def show_start_time_picker(self):
         time_dialog = MDTimePicker()
         time_dialog.bind(time=self.get_start_time)
         time_dialog.open()
 
-    # Function that calls when the date picker is interacted with
+    # [1] Function that calls when the date picker is interacted with
     def on_save(self, instance, value, date_range):
         date = value.strftime('%A %d %B %Y')
         self.root.ids.day_month_yr.text = str(date)
 
     # Opens the navigation drawer for the user to select a screen
     def open_nav_drawer(self, *args):
+        time = self.root.ids.current_date.text = str(datetime.now().strftime('%A %d %B %Y'))
         nav_drawer = self.root.ids.nav_drawer
         nav_drawer.set_state("open")
 
@@ -173,24 +169,23 @@ class porter_track(MDApp):
         nav_drawer.set_state("close")
 
 
-
-    # Function to check all fields of the task window have been entered
+    # [2] Function to check all fields of the task window have been entered
     def check_all_fields(self):
         if self.check_time == 'ok' and self.check_date == 'ok':
             return True
         else:
             return False
 
-    # If the user has not entered any fields of the task window, display warning
+    # [2] If the user has not entered any fields of the task window, display warning
     def warning(self):
         Snackbar(text="Please enter all fields.").open()
 
-    # Opens the task window
+    # [2] Opens the task creation window
     def open_task_window(self):
         pop_screen = TaskWindow(app)
         pop_screen.open()
 
-    # Closes the task window
+    # [2] Closes the task creation window
     def close_task_window(self, *args):
         pop_screen = TaskWindow(app)
         pop_screen.dismiss()
@@ -219,11 +214,11 @@ class porter_track(MDApp):
         self.root.ids.user.text = ""
         self.root.ids.password.text = ""
 
-    # Gets the value from the priority slider
+    # [2] Gets the value from the priority slider
     def callback(self, slider_value):
         self.priority = int(slider_value)
 
-    # Function to store date in variables
+    # [2] Function to store date in variables
     def get_date(self, instance, value, date_range):
         self.year = str(value.year)
         self.month = str(value.month)
@@ -238,7 +233,7 @@ class porter_track(MDApp):
         self.day_month_yr = self.day + '/' + self.month + '/' + self.year
         self.check_date = 'ok'
 
-    # Function to store time in variables
+    # [2] Function to store time in variables
     def get_time(self, instance, time):
         self.hour = str(time.hour)
         self.min = str(time.minute)
@@ -265,12 +260,8 @@ class porter_track(MDApp):
 
         self.start_time = self.hour + ":" + self.min
 
-    def empty_comp_tasks(self, empty_comp):
-        incompleted_tasks = db.get_tasks()
-        if incompleted_tasks == []:
-            self.root.ids.notask.text = 'No tasks to show.'
 
-    # On system start, loads up task lists
+    # [1] On system start, loads up task lists
     def on_start(self):
         try:
             completed_tasks, incompleted_tasks = db.get_tasks()
@@ -323,7 +314,7 @@ class porter_track(MDApp):
             pass
 
 
-    # Function for adding task to the system
+    # [1] Function for adding task to the system
     def add_task(self, origin, destination, equipment, jobtype, pname, day_month_yr, hour_min, priority):
         created_task = db.create_task(origin, destination, equipment, jobtype, pname, day_month_yr, hour_min, priority)
 
@@ -351,3 +342,13 @@ class porter_track(MDApp):
 if __name__=='__main__':
     app = porter_track()
     app.run()
+
+# [1] Adapted from: https://github.com/BekBrace/Task-Manager-Kivy
+# Title: 'Task Manager Kivy'
+# Author: BekBrace
+# Accessed 16/03/2023
+
+# [2] Adapted from: https://github.com/Naval305/To-Do-List-and-Notes
+# Title: 'To Do List and Notes'
+# Author: Naval305
+# Accessed 31/03/2023
