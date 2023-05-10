@@ -170,21 +170,93 @@ Screen:
 
             Screen:
                 name: 'main'
+                MDCard:
+                    size_hint: 0.8, None
+                    size: 300, 400
+                    pos_hint : {"center_x": 0.5, "center_y": 0.5}
+                    elevation: 3
+                    padding: 25
+                    spacing: "10dp"
+                    orientation: 'vertical'
 
-                MDLabel:
-                    id: notask
-                    markup: True
-                    text: "[i]No tasks to show[/i]"
-                    font_size: 16
-                    halign: "center"
+                    MDLabel:
+                        markup: True
+                        text: "[b]Current Task[/b]"
+                        font_size: 28
+                        halign: 'center'
+                        size_hint_y: None
+                        theme_text_color: "Custom"
+                        text_color: get_color_from_hex('#0099ff')
+                        height: self.texture_size[1]
 
-                ScrollView:
-                    do_scroll_x: False
-                    size_hint: 1, 0.92
-                    pos_hint: {"top": 0.85}
+                    MDLabel:
+                        id: jobtype
+                        markup: True
+                        text: "Patient Movement"
+                        font_size: 24
+                        halign: 'center'
+                        size_hint_y: None
+                        height: self.texture_size[1]
 
-                    MDList:
-                        id: container
+                    MDLabel:
+                        id: origin_label
+                        markup: True
+                        text: "[b]From:[/b] Ward 2"
+                        font_size: 15
+                        size_hint: (0.98, 0.5)
+                        pos_hint: {"center_x": 0.5, "y": 0.9}
+
+                    MDLabel:
+                        id: destination
+                        markup: True
+                        text: "[b]To:[/b] X-ray"
+                        font_size: 15
+                        size_hint: (0.98, 1)
+                        pos_hint: {"center_x": 0.5, "y": 0.85}
+
+                    MDLabel:
+                        id: equipment
+                        markup: True
+                        text: "[b]Using:[/b] Chair"
+                        font_size: 15
+                        size_hint: (0.98, 1)
+                        pos_hint: {"center_x": 0.5, "y": 0.8}
+
+                    MDLabel:
+                        id: time
+                        markup: True
+                        text: "[b]Time:[/b] 15:00"
+                        font_size: 15
+                        size_hint: (0.98, 1)
+                        pos_hint: {"center_x": 0.5, "y": 0.75}
+
+                    MDLabel:
+                        id: pname
+                        markup: True
+                        text: "[b]Patient Name:[/b] Bailey Hall"
+                        font_size: 15
+                        size_hint: (0.98, 1)
+                        pos_hint: {"center_x": 0.5, "y": 0.75}
+
+                    MDFloatLayout:
+                        MDFillRoundFlatIconButton
+                            icon: "check"
+                            text: "COMPLETE"
+                            theme_text_color: "Custom"
+                            text_color: "white"
+                            pos_hint: {'x': 0.55, 'y': 0.1}
+                            on_release:
+                                app.mark_complete(check, the_list_item)
+
+                        MDFillRoundFlatIconButton
+                            icon: "window-close"
+                            text: "CANCEL"
+                            theme_text_color: "Custom"
+                            text_color: "white"
+                            md_bg_color: "red"
+                            pos_hint: {'x': 0.01, 'y': 0.1}
+                            on_press:
+                                app.change_screen("main")
 
 
             Screen:
@@ -538,7 +610,7 @@ Screen:
 
             MDLabel:
                 markup: True
-                text: '[b]Porter ID[/b]'
+                text: '[b]Porter ID[/b]: Bailey'
                 font_style: 'Subtitle1'
                 size_hint_y: None
                 height: self.texture_size[1]
